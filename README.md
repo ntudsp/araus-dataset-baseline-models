@@ -104,7 +104,6 @@ The augmented soundscapes may be generated in <a href="https://xiph.org/flac/">F
     │   ├── ...
     │   └── R0133_segment_binaural.wav
     │
-    ├── .gitignore
     ├── README.md                                          # This file.
     ├── araus-mac.yml                                      # The Anaconda environment containing required packages to run all the code in ./code (for MacOS)
     └── araus.yml                                          # The Anaconda environment containing required packages to run all the code in ./code.
