@@ -14,7 +14,7 @@ The ARAUS dataset also makes use of masker recordings taken from <a href="https:
 
 Firstly, clone this repository by manually downloading it from https://github.com/kenowr/araus-dataset-baseline-models, or enter the following line from a terminal (you need to have <a href="https://github.com/git-guides/install-git">git</a> installed first, of course):
 
-    git clone https://github.com/kenowr/araus-dataset-baseline-models.git
+    git clone https://github.com/ntudsp/araus-dataset-baseline-models.git
 
 If you are using <a href="https://docs.conda.io/en/latest/">conda</a> as your package manager, you may enter the following line into a terminal to install the required packages into a conda environment (or you may install them manually using the requirements stated in `araus.yml`):
 
