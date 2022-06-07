@@ -16,6 +16,10 @@ Firstly, clone this repository by manually downloading it from https://github.co
 
     git clone https://github.com/ntudsp/araus-dataset-baseline-models.git
 
+You may then navigate to the downloaded folder with 
+
+    cd araus-dataset-baseline-models
+
 If you are using <a href="https://docs.conda.io/en/latest/">conda</a> as your package manager, you may enter the following line into a terminal to install the required packages into a conda environment (or you may install them manually using the requirements stated in `araus.yml`):
 
     conda env create -f araus.yml
