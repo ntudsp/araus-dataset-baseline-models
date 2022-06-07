@@ -1,0 +1,15 @@
+name: araus-mac
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - tensorflow=2.8.1
+  - jupyterlab=3.4.0
+  - librosa=0.9.1
+  - pandas=1.4.2
+  - pingouin=0.5.1
+  - pysoundfile=0.10.3
+  - python-wget=3.2
+  - scikit-learn=1.1.1
+  - seaborn=0.11.2
+prefix: \anaconda3\envs\araus-mac

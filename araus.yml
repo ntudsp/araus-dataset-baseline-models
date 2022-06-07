@@ -1,0 +1,15 @@
+name: araus
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - jupyterlab=3.4.0
+  - librosa=0.9.1
+  - pandas=1.4.2
+  - pingouin=0.5.1
+  - pysoundfile=0.10.3
+  - python-wget=3.2
+  - scikit-learn=1.0.2
+  - seaborn=0.11.2
+  - tensorflow-gpu=2.6.0
+prefix: \anaconda3\envs\araus
