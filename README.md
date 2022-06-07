@@ -57,7 +57,6 @@ The augmented soundscapes may be generated in <a href="https://xiph.org/flac/">F
     │   ├── manifest.csv
     │   └── replication_code.ipynb
     │
-    ├── .gitignore
     ├── README.md                                          # This file.
     ├── araus-mac.yml                                      # The Anaconda environment containing required packages to run all the code in ./code (for macOS)
     └── araus.yml                                          # The Anaconda environment containing required packages to run all the code in ./code (for Windows and Ubuntu).
