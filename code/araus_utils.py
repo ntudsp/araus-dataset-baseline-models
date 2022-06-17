@@ -107,7 +107,8 @@ def autolabel(containers, axs, i = 0, width_scales = 2.0, height_scales = 3.0, m
         Maximum number of columns of bars to add text on.
     f_height : callable (function)
         Any function taking in the height and returning a
-        numerical value to place as each bar's text.
+        string to place as each bar's text. Default is to
+        print exactly the height.
     
     =======
     Returns
@@ -129,7 +130,7 @@ def autolabel(containers, axs, i = 0, width_scales = 2.0, height_scales = 3.0, m
         width_scales = np.repeat(np.expand_dims(np.array(width_scales),axis=-1),N,axis=-1) # Assume that the scales are same for same row.
     else:
         width_scales = np.array(width_scales)
-        
+    
     if type(height_scales) == float:
         height_scales = np.array([[height_scales]*N]*M)
     elif len(np.array(height_scales).shape) == 1:
@@ -153,9 +154,9 @@ def autolabel(containers, axs, i = 0, width_scales = 2.0, height_scales = 3.0, m
             width_scale = width_scales[m,n]
             
             if type(axs) == np.ndarray: axs = axs[i]
-                
+            
             axs.text(x + width/width_scale, y + height/height_scale,
-                '%.0f%%' % f_height(height),
+                f_height(height),
                 ha='center', va='bottom', fontsize=14)
 
 #==============================================================#===============================================================#
@@ -888,6 +889,7 @@ def plot_categorical_participant_info(participants,
                                                       [0],
                                                       [0]],
                                       figsize = (8,4),
+                                      ymax = 120,
                                       save_to_file = True,
                                       out_dir = os.path.join('..','figures'),
                                       file_format = 'pdf',
@@ -929,6 +931,8 @@ def plot_categorical_participant_info(participants,
     figsize : tuple of float
         The size of the plots when displayed (or outputted to
         file).
+    ymax : float
+        Maximum height of y axis in figure.
     save_to_file : bool
         If True, saves the plots to files. If False, only
         calls plt.show() without saving plots to files.
@@ -956,19 +960,22 @@ def plot_categorical_participant_info(participants,
     for cat_key, ordinate_label, legend_label, height_scales, bar_order, grouped_col in zip(cat_keys, ordinate_labels, legend_labels, height_scaless, bar_orders, grouped_cols):
         # PROCESS DATA TO PLOT
         summary_df = participants[participants['fold_p'] != 0].value_counts(['fold_p',cat_key]).reset_index().pivot_table(index='fold_p',columns=cat_key)
+        if verbose:
+            print(f'summary_df (before adjustment) is as follows:')
+            print(summary_df)
         add_df = pd.DataFrame({'fold_p': [6,7],cat_key:[0,0],0:[0,0]}).pivot_table(index='fold_p',columns=cat_key) # Create artificial entries at x = 6 and 7 to stretch the x axis s.t. the legends can be accommodated.
         summary_df = pd.concat((summary_df,add_df)) # Add the artificial entries
         summary_df = summary_df.fillna(0) # Fill NaNs with 0s to prevent errors with sums later
         summary_df[(0,0)] = summary_df[[(0,i) for i in grouped_col]].sum(axis=1) # Summarise the columns (by summing) that are in grouped_cols
         summary_df = summary_df[[(0,i) for i in bar_order]] # Reorder columns (= bar plot order)
         if verbose:
-            print(f'summary_df is as follows:')
+            print(f'summary_df (after adjustment) is as follows:')
             print(summary_df)
 
         # MAKE STACKED BAR PLOT
         row_labels = [key[1] for key in summary_df.keys()] # These are the numerical versions for legend_labels
         ax = summary_df.plot.bar(stacked=True,edgecolor='black',figsize=figsize)
-        ax.set_ylim(0,120)
+        ax.set_ylim(0,ymax)
         ax.set_ylabel(f'Frequency ({ordinate_label})')
         ax.set_xlabel('Fold')
         ax.set_xticklabels(labels=[1,2,3,4,5,'',''],rotation=0)
@@ -981,10 +988,10 @@ def plot_categorical_participant_info(participants,
         
         # ATTEMPT TO LABEL BARS
         try:
-            autolabel(ax.containers, ax, height_scales = [height_scales[i] for i in bar_order] if type(height_scales) == dict else height_scales, f_height = lambda height: height*100/120)
+            autolabel(ax.containers, ax, height_scales = [height_scales[i] for i in bar_order] if type(height_scales) == dict else height_scales, f_height = lambda height: f'{height*100/ymax:.0f}%' if height > 0 else '')
         except:
             if verbose: print(f'autolabel failed to label bar percentages for {cat_key}')
-            
+        
         # SAVE TO FILE AND/OR DISPLAY
         if save_to_file:
             if (not os.path.exists(out_dir)) and len(out_dir) > 0: os.makedirs(out_dir) # Make the output directory if it doesn't already exist
