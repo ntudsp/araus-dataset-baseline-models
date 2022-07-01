@@ -2,7 +2,7 @@
 
 This repository stores code to download the ARAUS dataset and train baseline models for the dataset. For more details on the dataset, please refer to our publication:
 
-> Kenneth Ooi, Zhen-Ting Ong, Karn N. Watcharasupat, Bhan Lam, Joo Young Hong, Woon-Seng Gan, ARAUS: A large-scale dataset and baseline models of affective responses to augmented urban soundscapes, _Building and Environment_, [Under review].
+> Kenneth Ooi, Zhen-Ting Ong, Karn N. Watcharasupat, Bhan Lam, Joo Young Hong, Woon-Seng Gan, ARAUS: A large-scale dataset and baseline models of affective responses to augmented urban soundscapes, _IEEE Transactions on Affective Computing_, [Under review].
 
 The ARAUS dataset makes use of urban soundscape recordings from the <a href="https://urban-soundscapes.s3.eu-central-1.wasabisys.com/soundscapes/index.html">Urban Soundscapes of the World (USotW) database</a>. If you use the ARAUS dataset or the USotW recordings in your work, please cite the following publication:
 
