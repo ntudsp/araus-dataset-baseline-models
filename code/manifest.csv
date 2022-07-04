@@ -1,6 +1,6 @@
 url,out,checksum
 https://researchdata.ntu.edu.sg/api/access/datafile/89458?gbrecs=true,../maskers.zip,34f34a8e1264ca2aae0788c1101de5c1d9ff9af804cb4aa5388a161fd916773b5b4d165c5d546e516ab035b5b5499d015cc00f77ff8fc31107999e08e44d5cc1
-https://researchdata.ntu.edu.sg/api/access/datafile/92050?gbrecs=true,../figures.zip,092f71991a2510972f16ea2939c5ed7db8f6cd93bdf893eb0c017660b17e0dcd172d2e5dc54430e3bde7aa25ae68a2c5949020bf0dfa936c216be355b93c89b3
+https://researchdata.ntu.edu.sg/api/access/datafile/92050?gbrecs=true,../figures.zip,4462f9ffafcbfd9bae3d0f19a9bc88d7e19f21a62629abd5daae99923251ecc269773b91b1c6c0499380cc84f437dfaf14fbc7bce1242b4b3de6f53750d4719b
 https://researchdata.ntu.edu.sg/api/access/datafile/92052?gbrecs=true,../data.zip,f1bea7554fb4520e063f54ca70781e56a01090488a13c81af40bb26f7428639da07138bb05d81076dcf8052ac915c51f4afe01307b44b526e45a3a3482ed7fe3
 https://researchdata.ntu.edu.sg/api/access/datafile/89459?gbrecs=true,../soundscapes.zip,e462e963d28835f25bb40a2a0c01f1c33e654367f1a7dc073becb352bb388d3c9de68c130dcb4d204b9809411ec42558b379a8607ed6a34efa752a3012e534a2
 https://urban-soundscapes.s3.eu-central-1.wasabisys.com/soundscapes/audio/binaural/R0001_segment_binaural.wav,../soundscapes_raw/R0001_segment_binaural.wav,175f245fd4756350c67b38e72283b2f87033ea4323799dbff0be595ecb9e4e37c478ecb85a5ae69b5ad329a45927242a2be998b9d303f3922e76cac5602c0e6f
