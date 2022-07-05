@@ -84,7 +84,7 @@ The augmented soundscapes may be generated in <a href="https://xiph.org/flac/">F
     │   ├── responses_rejected.csv
     │   └── soundscapes.csv
     │
-    ├── figures                                            # Folder containing all reference figures used in the Jupyter Notebook (46 files; all png)
+    ├── figures                                            # Folder containing all reference figures used in the Jupyter Notebook (48 files; all png)
     │   ├── BIRD_abs.png
     │   ├── ...
     │   └── WIND_pc.png
