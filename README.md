@@ -1,6 +1,6 @@
 # araus-dataset-baseline-models
 
-This repository stores code to download the ARAUS dataset and train baseline models for the dataset. For more details on the dataset, please refer to our publication:
+This repository stores code to download the ARAUS dataset and train baseline models for the dataset. For more details on the dataset, please refer to our publication (a preprint can be found on arXiv at <a href="https://doi.org/10.48550/arXiv.2207.01078">https://doi.org/10.48550/arXiv.2207.01078</a>:
 
 > Kenneth Ooi, Zhen-Ting Ong, Karn N. Watcharasupat, Bhan Lam, Joo Young Hong, Woon-Seng Gan, ARAUS: A large-scale dataset and baseline models of affective responses to augmented urban soundscapes, _IEEE Transactions on Affective Computing_, [Under review].
 
