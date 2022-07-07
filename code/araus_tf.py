@@ -490,7 +490,7 @@ def train_model(model,
                            workers = workers,
                            use_multiprocessing = use_multiprocessing)
     
-    with open(os.path.join(model_dir,f'model_{mtype}_run_{run:02d}_fold_{val_fold}_history.json'), 'w') as fp:
+    with open(os.path.join(model_dir,f'model_{mtype}_run_{run:02d}_fold_{val_fold}_train_val_history.json'), 'w') as fp:
         json.dump(model_hist.history, fp)
     
     loss_dict = model.evaluate(x = test_data,
@@ -500,6 +500,9 @@ def train_model(model,
                                workers = workers,
                                use_multiprocessing = use_multiprocessing,
                                return_dict = True)
+    
+    with open(os.path.join(model_dir,f'model_{mtype}_run_{run:02d}_fold_{val_fold}_test_history.json'), 'w') as fp:
+        json.dump(loss_dict, fp)
     
     return model_hist.history, loss_dict
 
