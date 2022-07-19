@@ -1,0 +1,40 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: >-
+  ARAUS: A large-scale dataset and baseline models of
+  affective responses to augmented urban soundscapes
+message: 'If you use this dataset, please cite it as follows'
+type: dataset
+authors:
+  - given-names: Kenneth
+    family-names: Ooi
+    email: wooi002@e.ntu.edu.sg
+    affiliation: Nanyang Technological University (NTU)
+    orcid: 'https://orcid.org/0000-0001-5629-6275'
+  - given-names: Zhen-Ting
+    family-names: Ong
+    email: ztong@ntu.edu.sg
+    affiliation: Nanyang Technological University (NTU)
+    orcid: 'https://orcid.org/0000-0002-1249-4760'
+  - given-names: Karn N.
+    family-names: Watcharasupat
+    email: karn001@ntu.edu.sg
+    orcid: 'https://orcid.org/0000-0002-3878-5048'
+    affiliation: Nanyang Technological University (NTU)
+  - given-names: Bhan
+    family-names: Lam
+    email: bhanlam@ntu.edu.sg
+    affiliation: Nanyang Technological University (NTU)
+    orcid: 'https://orcid.org/0000-0001-5193-6560'
+  - given-names: Joo Young
+    family-names: Hong
+    email: jyhong@cnu.ac.kr
+    affiliation: Chungnam National University (CNU)
+    orcid: 'https://orcid.org/0000-0002-0109-5975'
+  - given-names: Woon-Seng
+    family-names: Gan
+    email: ewsgan@ntu.edu.sg
+    orcid: 'https://orcid.org/0000-0002-7143-1823'
+    affiliation: Nanyang Technological University (NTU)
