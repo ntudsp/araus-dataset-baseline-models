@@ -294,7 +294,7 @@ This CSV file contains information related to the urban soundscapes used to gene
 - `fold_s` : integers in {-1, 0, 1, 2, 3, 4, 5}<a name="fold_s">
   - The fold index of the urban soundscape. The sets of urban soundscapes in each fold are pairwise disjoint.
   - Keys:
-    - `-1` : Not in any fold. This could be because (a) the stimulus has an in-situ L<sub>A,eq</sub> below 52 dB (to ensure that reproduction levels were significantly above the noise floor where the listening experiments were conducted), (b) the stimulus has an in-situ L<sub>A,eq</sub> above 77 dB (to ensure safe listening levels for our participants), or (c) the stimulus was used as the practice (first), attention (middle), and consistency check (last) stimulus for all participants (to prevent data leakage since it is present to all folds).
+    - `-1` : Not in any fold. This could be because (a) the stimulus has an in-situ L<sub>A,eq</sub> below 52 dB (to ensure that reproduction levels were significantly above the noise floor where the listening experiments were conducted), (b) the stimulus has an in-situ L<sub>A,eq</sub> above 77 dB (to ensure safe listening levels for our participants), or (c) the stimulus was used as the practice (first), attention (middle), and consistency check (last) stimulus for all participants (to prevent data leakage since it is present in all folds).
     - `0` : Test set.
     - `1` : Fold 1 of the 5-fold cross-validation set.
     - `2` : Fold 2 of the 5-fold cross-validation set.
@@ -556,7 +556,7 @@ When responses were rejected, a different participant was assigned the same ID a
 
 - <a href="#participant_field">`participant`</a> : unique strings of length 5 (`responses.csv`) or unique strings (`responses_rejected.csv`)
   - The ID of the participant who provided the current row of responses. Each ID corresponds to a unique participant.
-- `fold_r` : integers in {0, 1, 2, 3, 4, 5}
+- `fold_r` : integers in {-1, 0, 1, 2, 3, 4, 5}
   - The fold index of the response. The sets of responses in each fold are pairwise disjoint.
   - This is identical to the fold indices associated with `soundscape` (i.e. `fold_s`). When not -1, this is also identical to the fold indices associated with `participant` and `masker` (i.e. `fold_p` and `fold_m`).
   - Keys:
@@ -596,19 +596,19 @@ When responses were rejected, a different participant was assigned the same ID a
 - `pleasant` : integers in {1, 2, 3, 4, 5}
   - Response to the question "To what extent do you agree or disagree that the present surrounding sound environment is pleasant?" on a 5-point scale (1 = Strongly disagree, 5 = Strongly agree)
 - `eventful` : integers in {1, 2, 3, 4, 5}
-  - Response to the question "To what extent do you agree or disagree that the present surrounding sound environment is pleasant?" on a 5-point scale (1 = Strongly disagree, 5 = Strongly agree)
+  - Response to the question "To what extent do you agree or disagree that the present surrounding sound environment is eventful?" on a 5-point scale (1 = Strongly disagree, 5 = Strongly agree)
 - `chaotic` : integers in {1, 2, 3, 4, 5}
-  - Response to the question "To what extent do you agree or disagree that the present surrounding sound environment is pleasant?" on a 5-point scale (1 = Strongly disagree, 5 = Strongly agree)
+  - Response to the question "To what extent do you agree or disagree that the present surrounding sound environment is chaotic?" on a 5-point scale (1 = Strongly disagree, 5 = Strongly agree)
 - `vibrant` : integers in {1, 2, 3, 4, 5}
-  - Response to the question "To what extent do you agree or disagree that the present surrounding sound environment is pleasant?" on a 5-point scale (1 = Strongly disagree, 5 = Strongly agree)
+  - Response to the question "To what extent do you agree or disagree that the present surrounding sound environment is vibrant?" on a 5-point scale (1 = Strongly disagree, 5 = Strongly agree)
 - `uneventful` : integers in {1, 2, 3, 4, 5}
-  - Response to the question "To what extent do you agree or disagree that the present surrounding sound environment is pleasant?" on a 5-point scale (1 = Strongly disagree, 5 = Strongly agree)
+  - Response to the question "To what extent do you agree or disagree that the present surrounding sound environment is uneventful?" on a 5-point scale (1 = Strongly disagree, 5 = Strongly agree)
 - `calm` : integers in {1, 2, 3, 4, 5}
-  - Response to the question "To what extent do you agree or disagree that the present surrounding sound environment is pleasant?" on a 5-point scale (1 = Strongly disagree, 5 = Strongly agree)
+  - Response to the question "To what extent do you agree or disagree that the present surrounding sound environment is calm?" on a 5-point scale (1 = Strongly disagree, 5 = Strongly agree)
 - `annoying` : integers in {1, 2, 3, 4, 5}
-  - Response to the question "To what extent do you agree or disagree that the present surrounding sound environment is pleasant?" on a 5-point scale (1 = Strongly disagree, 5 = Strongly agree)
+  - Response to the question "To what extent do you agree or disagree that the present surrounding sound environment is annoying?" on a 5-point scale (1 = Strongly disagree, 5 = Strongly agree)
 - `monotonous` : integers in {1, 2, 3, 4, 5}
-  - Response to the question "To what extent do you agree or disagree that the present surrounding sound environment is pleasant?" on a 5-point scale (1 = Strongly disagree, 5 = Strongly agree)
+  - Response to the question "To what extent do you agree or disagree that the present surrounding sound environment is monotonous?" on a 5-point scale (1 = Strongly disagree, 5 = Strongly agree)
 - `appropriate` : integers in {1, 2, 3, 4, 5}
   - Response to the question "Overall, to what extent is the present surrounding sound environment appropriate to the present place?" on a 5-point scale (1 = Not at all, 5 = Perfectly)
 - `Savg_r` : floating point numbers
@@ -710,4 +710,5 @@ conda install -c conda-forge python-wget
 
 # Version history
 
+- 0.0.1 : Fixed some typos in readme.
 - 0.0.0 : Initial release
