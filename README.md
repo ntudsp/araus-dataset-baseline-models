@@ -280,7 +280,7 @@ Hence, we recommend using the maskers downloaded using `./code/download.py` (or 
   - `##` percent exceedance level of psychoacoustic tonality (in tonality units), computed with a frequency range of 20 Hz to 20 kHz according to ECMA 74. This is the value exceeded `##` percent of the time.
   - `##` is replaced by integers in {05, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95}.
 - `M#####_#_m` : floating point numbers
-  - Power (in A-weighted decibels relative to 0.00002 Pa) at <a href="https://apmr.matelys.com/Standards/OctaveBands.html">one-third octave band</a> with centre frequency of `#####.#` Hz.
+  - Power (in A-weighted decibels relative to 0.00002 Pa) at <a href="https://apmr.matelys.com/Standards/OctaveBands.html">one-third octave band</a> with centre frequency of `#####.#` Hz, computed using a Fast Fourier Transform with a Hanning window of size 8192 samples and 50% overlap between windows.
   - `#####_#` is replaced by values in {00005_0, 00006_3, 00008_0, 00010_0, 00012_5, 00016_0, 00020_0, 00025_0, 00031_5, 00040_0, 00050_0, 00063_0, 00080_0, 00100_0, 00125_0, 00160_0, 00200_0, 00250_0, 00315_0, 00400_0, 00500_0, 00630_0, 00800_0, 01000_0, 01250_0, 01600_0, 02000_0, 02500_0, 03150_0, 04000_0, 05000_0, 06300_0, 08000_0, 10000_0, 12500_0, 16000_0, 20000_0}
 
 ## `soundscapes.csv` <a name="soundscapes">
@@ -387,7 +387,7 @@ This CSV file contains information related to the urban soundscapes used to gene
   - `##` percent exceedance level of psychoacoustic tonality (in tonality units), computed with a frequency range of 20 Hz to 20 kHz according to ECMA 74. This is the value exceeded `##` percent of the time.
   - `##` is replaced by integers in {05, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95}.
 - `M#####_#_s` : floating point numbers
-  - Power (in A-weighted decibels relative to 0.00002 Pa) at <a href="https://apmr.matelys.com/Standards/OctaveBands.html">one-third octave band</a> with centre frequency of `#####.#` Hz.
+  - Power (in A-weighted decibels relative to 0.00002 Pa) at <a href="https://apmr.matelys.com/Standards/OctaveBands.html">one-third octave band</a> with centre frequency of `#####.#` Hz, computed using a Fast Fourier Transform with a Hanning window of size 8192 samples and 50% overlap between windows.
   - `#####_#` is replaced by values in {00005_0, 00006_3, 00008_0, 00010_0, 00012_5, 00016_0, 00020_0, 00025_0, 00031_5, 00040_0, 00050_0, 00063_0, 00080_0, 00100_0, 00125_0, 00160_0, 00200_0, 00250_0, 00315_0, 00400_0, 00500_0, 00630_0, 00800_0, 01000_0, 01250_0, 01600_0, 02000_0, 02500_0, 03150_0, 04000_0, 05000_0, 06300_0, 08000_0, 10000_0, 12500_0, 16000_0, 20000_0}
 
 ## `participants.csv` and `participants_rejected.csv` <a name="participants">
@@ -692,7 +692,7 @@ When responses were rejected, a different participant was assigned the same ID a
   - `##` percent exceedance level of psychoacoustic tonality (in tonality units), computed with a frequency range of 20 Hz to 20 kHz according to ECMA 74. This is the value exceeded `##` percent of the time.
   - `##` is replaced by integers in {05, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95}.
 - `M#####_#_r` : floating point numbers
-  - Power (in A-weighted decibels relative to 0.00002 Pa) at <a href="https://apmr.matelys.com/Standards/OctaveBands.html">one-third octave band</a> with centre frequency of `#####.#` Hz.
+  - Power (in A-weighted decibels relative to 0.00002 Pa) at <a href="https://apmr.matelys.com/Standards/OctaveBands.html">one-third octave band</a> with centre frequency of `#####.#` Hz, computed using a Fast Fourier Transform with a Hanning window of size 8192 samples and 50% overlap between windows.
   - `#####_#` is replaced by values in {00005_0, 00006_3, 00008_0, 00010_0, 00012_5, 00016_0, 00020_0, 00025_0, 00031_5, 00040_0, 00050_0, 00063_0, 00080_0, 00100_0, 00125_0, 00160_0, 00200_0, 00250_0, 00315_0, 00400_0, 00500_0, 00630_0, 00800_0, 01000_0, 01250_0, 01600_0, 02000_0, 02500_0, 03150_0, 04000_0, 05000_0, 06300_0, 08000_0, 10000_0, 12500_0, 16000_0, 20000_0}
     
 # Individual conda installation commands
@@ -710,5 +710,6 @@ conda install -c conda-forge python-wget
 
 # Version history
 
+- 0.0.2 : Added details of FFT for `M#####_#` documentation.
 - 0.0.1 : Fixed some typos in readme.
 - 0.0.0 : Initial release
