@@ -462,6 +462,7 @@ def make_augmented_soundscapes(responses, soundscapes, maskers,
         try:
             # GET NECESSARY DATA FROM RESPONSES FOR CALIBRATION
             participant_id = row['participant']
+            participant_id = int(participant_id.split('_')[-1]) # Get the part without "ARAUS_" as the actual id number.
             fold = row['fold_r']
             soundscape_fname = row['soundscape']
             masker_fname = row['masker']

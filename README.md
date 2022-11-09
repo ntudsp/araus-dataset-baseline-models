@@ -398,8 +398,9 @@ When participants' responses were rejected, a different participant was assigned
 
 ### Fields
 
-- `participant` : unique strings of length 5 (`participants.csv`) or unique strings (`participants_rejected.csv`) <a name="participant_field">
+- `participant` : unique strings <a name="participant_field">
   - The ID of the participant who provided the current row of information about themselves. Each ID corresponds to a unique participant.
+  - For `participants.csv`, these strings are of the form `ARAUS_#####`, where `#####` is a unique sequence of 5 digits.
 - `fold_p` : integers in {0, 1, 2, 3, 4, 5}
   - The fold index of the participant. The sets of participants in each fold are pairwise disjoint.
   - Keys:
@@ -554,8 +555,9 @@ When responses were rejected, a different participant was assigned the same ID a
 
 ### Fields
 
-- <a href="#participant_field">`participant`</a> : unique strings of length 5 (`responses.csv`) or unique strings (`responses_rejected.csv`)
+- <a href="#participant_field">`participant`</a> : unique strings
   - The ID of the participant who provided the current row of responses. Each ID corresponds to a unique participant.
+  - For `responses.csv`, these strings are of the form `ARAUS_#####`, where `#####` is a unique sequence of 5 digits for each unique participant.
 - `fold_r` : integers in {-1, 0, 1, 2, 3, 4, 5}
   - The fold index of the response. The sets of responses in each fold are pairwise disjoint.
   - This is identical to the fold indices associated with `soundscape` (i.e. `fold_s`). When not -1, this is also identical to the fold indices associated with `participant` and `masker` (i.e. `fold_p` and `fold_m`).
@@ -694,6 +696,10 @@ When responses were rejected, a different participant was assigned the same ID a
 - `M#####_#_r` : floating point numbers
   - Power (in A-weighted decibels relative to 0.00002 Pa) at <a href="https://apmr.matelys.com/Standards/OctaveBands.html">one-third octave band</a> with centre frequency of `#####.#` Hz, computed using a Fast Fourier Transform with a Hanning window of size 8192 samples and 50% overlap between windows.
   - `#####_#` is replaced by values in {00005_0, 00006_3, 00008_0, 00010_0, 00012_5, 00016_0, 00020_0, 00025_0, 00031_5, 00040_0, 00050_0, 00063_0, 00080_0, 00100_0, 00125_0, 00160_0, 00200_0, 00250_0, 00315_0, 00400_0, 00500_0, 00630_0, 00800_0, 01000_0, 01250_0, 01600_0, 02000_0, 02500_0, 03150_0, 04000_0, 05000_0, 06300_0, 08000_0, 10000_0, 12500_0, 16000_0, 20000_0}
+- `Leq_L_r` : floating point numbers
+  - Exponentially averaged sound pressure level (in decibels) over time of the left channel of the augmented soundscape (with no weighting filter applied), computed with fast averaging (i.e. with time constant of 125 milliseconds) and measured according to the method described in http://dx.doi.org/10.1016/j.mex.2021.101288.
+- `Leq_R_r` : floating point numbers
+  - Exponentially averaged sound pressure level (in decibels) over time of the right channel of the augmented soundscape (with no weighting filter applied), computed with fast averaging (i.e. with time constant of 125 milliseconds) and measured according to the method described in http://dx.doi.org/10.1016/j.mex.2021.101288.
     
 # Individual conda installation commands
 ```
@@ -710,6 +716,7 @@ conda install -c conda-forge python-wget
 
 # Version history
 
+- 1.0.0 : Updated `replication_code.ipynb`, `araus_tf.py`, and `araus_utils.py` to be compatible with changes to the ARAUS dataset format (Version 2.0 according to https://doi.org/10.21979/N9/9OTEVX). The `participant` field in `./data/responses.csv`, `./data/responses_rejected.csv`, `./data/participants.csv`, `./data/participants_rejected.csv`, and `./data/participants_rejected_reasons.csv` has been updated to `ARAUS_#####`, where `#####` is the string in the `participant` field of the previous version (Version 1.2 according to https://doi.org/10.21979/N9/9OTEVX). In addition, two new fields `Leq_L_r` and `Leq_R_r` have been added to `./data/responses.csv` and `./data/responses_rejected.csv` corresponding to the exponentially averaged sound pressure level (in decibels) over time (with no weighting filter applied), computed with fast averaging (i.e. with time constant of 125 milliseconds) and measured according to the method described in http://dx.doi.org/10.1016/j.mex.2021.101288.
 - 0.0.2 : Added details of FFT for `M#####_#` documentation.
 - 0.0.1 : Fixed some typos in readme.
 - 0.0.0 : Initial release

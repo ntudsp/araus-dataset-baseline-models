@@ -58,7 +58,7 @@ class ARAUS_Sequence_from_audio(Sequence):
     responses = pd.read_csv(os.path.join(f'{metadata_dir}','responses.csv'), dtype = {'participant':str})
     
     # TEST SET
-    df_test = responses[(responses['fold_r'] == 0) & (responses['participant'] == '10001')].set_index(['soundscape','masker','smr'])
+    df_test = responses[(responses['fold_r'] == 0) & (responses['participant'] == 'ARAUS_10001')].set_index(['soundscape','masker','smr'])
     test_labels = responses[responses['fold_r'] == 0].groupby(['soundscape','masker','smr']).mean() # Average labels across all test set participants because they were presented with identical stimuli
     attributes = ['pleasant', 'eventful', 'chaotic', 'vibrant', 'uneventful', 'calm', 'annoying', 'monotonous']
     df_test[attributes] = test_labels[attributes]
@@ -212,6 +212,7 @@ class ARAUS_Sequence_from_npy(Sequence):
         for idx, (_, row) in enumerate(batch_responses.iterrows()): # Dataframe's index may be out of order so we don't use it (and assign it to _ instead).
             # GET NECESSARY DATA FROM CURRENT ROW
             participant_id = row['participant']
+            participant_id = int(participant_id.split('_')[-1]) # Get the part without "ARAUS_" as the actual id number.
             fold = row['fold_r']
             soundscape_fname = row['soundscape']
             masker_fname = row['masker']
@@ -299,6 +300,7 @@ class ARAUS_Sequence_from_npy(Sequence):
             
             # GET NECESSARY DATA FROM CURRENT ROW
             participant_id = row['participant']
+            participant_id = int(participant_id.split('_')[-1]) # Get the part without "ARAUS_" as the actual id number.
             fold = row['fold_r']
             soundscape_fname = row['soundscape']
             masker_fname = row['masker']
