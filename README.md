@@ -48,7 +48,11 @@ Alternatively, if you wish to only generate the augmented soundscapes to which t
 The augmented soundscapes may be generated in <a href="https://xiph.org/flac/">FLAC</a> format instead (~50 GB of data):
 
     python make_augmented_soundscapes.py -of flac
-    
+
+We have also added a Jupyter Notebook containing extra code and discussions outside the scope of our publication, which you may access by entering the following line into a terminal (this opens a Jupyter Notebook in your default browser):
+
+    jupyter lab --notebook-dir .. extra_code.ipynb
+
 # Directory structure
 
 ## This repository
@@ -57,6 +61,7 @@ The augmented soundscapes may be generated in <a href="https://xiph.org/flac/">F
     │   ├── araus_tf.py
     │   ├── araus_utils.py
     │   ├── download.py   
+    │   ├── extra_code.ipynb 
     │   ├── make_augmented_soundscapes.py
     │   ├── manifest.csv
     │   └── replication_code.ipynb
@@ -71,7 +76,8 @@ The augmented soundscapes may be generated in <a href="https://xiph.org/flac/">F
     ├── code                                               # Code used to process the raw data and output the results.
     │   ├── araus_tf.py
     │   ├── araus_utils.py
-    │   ├── download.py   
+    │   ├── download.py 
+    │   ├── extra_code.ipynb   
     │   ├── make_augmented_soundscapes.py
     │   ├── manifest.csv
     │   └── replication_code.ipynb
@@ -85,10 +91,10 @@ The augmented soundscapes may be generated in <a href="https://xiph.org/flac/">F
     │   ├── responses_rejected.csv
     │   └── soundscapes.csv
     │
-    ├── figures                                            # Folder containing all reference figures used in the Jupyter Notebook (48 files; all png)
-    │   ├── BIRD_abs.png
+    ├── figures                                            # Folder containing all reference figures used in the Jupyter Notebook (123 files; all png)
+    │   ├── circumplex_distribution_araus.png
     │   ├── ...
-    │   └── WIND_pc.png
+    │   └── times_taken_with_test.png
     │
     ├── maskers                                            # Folder containing all maskers used in the ARAUS dataset (293 files; all mono, 44.1kHz, 30 seconds in length).
     │   ├── bird_00001.wav
@@ -716,6 +722,7 @@ conda install -c conda-forge python-wget
 
 # Version history
 
+- 1.1.0 : Updated `replication_code.ipynb` and `araus_utils.py` to reflect additional plots and results mentioned in the reply letter to our submission to _IEEE Transactions on Affective Computing_, and added a new notebook `extra_code.ipynb` containing extra code and discussions that were outside of the scope of the manuscript.
 - 1.0.0 : Updated `replication_code.ipynb`, `araus_tf.py`, and `araus_utils.py` to be compatible with changes to the ARAUS dataset format (Version 2.0 according to https://doi.org/10.21979/N9/9OTEVX). The `participant` field in `./data/responses.csv`, `./data/responses_rejected.csv`, `./data/participants.csv`, `./data/participants_rejected.csv`, and `./data/participants_rejected_reasons.csv` has been updated to `ARAUS_#####`, where `#####` is the string in the `participant` field of the previous version (Version 1.2 according to https://doi.org/10.21979/N9/9OTEVX). In addition, two new fields `Leq_L_r` and `Leq_R_r` have been added to `./data/responses.csv` and `./data/responses_rejected.csv` corresponding to the exponentially averaged sound pressure level (in decibels) over time (with no weighting filter applied), computed with fast averaging (i.e. with time constant of 125 milliseconds) and measured according to the method described in http://dx.doi.org/10.1016/j.mex.2021.101288.
 - 0.0.2 : Added details of FFT for `M#####_#` documentation.
 - 0.0.1 : Fixed some typos in readme.

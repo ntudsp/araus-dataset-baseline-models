@@ -1,4 +1,4 @@
-import sklearn, os, wget, hashlib, librosa
+import sklearn, os, wget, hashlib, librosa, six
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -105,10 +105,12 @@ def autolabel(containers, axs, i = 0, width_scales = 2.0, height_scales = 3.0, m
         Maximum number of rows of bars to add text on.
     max_n : float
         Maximum number of columns of bars to add text on.
-    f_height : callable (function)
-        Any function taking in the height and returning a
-        string to place as each bar's text. Default is to
-        print exactly the height.
+    f_height : callable (function) or 2-D np.array
+        If callable, a function taking in the height and
+        returning a string to place as each bar's text.
+        Default is to print exactly the height.
+        If 2-D np.array, the (m,n)-th element contains
+        the string to place as the (m,n)-th bar's text.
     
     =======
     Returns
@@ -156,7 +158,7 @@ def autolabel(containers, axs, i = 0, width_scales = 2.0, height_scales = 3.0, m
             if type(axs) == np.ndarray: axs = axs[i]
             
             axs.text(x + width/width_scale, y + height/height_scale,
-                f_height(height),
+                f_height(height) if six.callable(f_height) else f_height[m,n],
                 ha='center', va='bottom', fontsize=14)
 
 #==============================================================#===============================================================#
@@ -1003,6 +1005,394 @@ def plot_categorical_participant_info(participants,
         
 #==============================================================#===============================================================#
 
+def plot_categorical_participant_info_by_count(participants,
+                                               cat_keys = ['language_a','language_b','language_c','gender','ethnic','occupation','education_a','education_b','dwelling','citizen','residence_length'],
+                                               ordinate_labels = ['Multilingual?','English native?','English best?','Gender','Ethnic group','Occupation','Highest education','Current education','Dwelling type','Citizen?','Residence length'],
+                                               legend_labels = [{0:'No',1:'Yes'},
+                                                                {-1:'N.A.',0:'No',1:'Yes'},
+                                                                {-1:'N.A.',0:'No',1:'Yes'},
+                                                                {0:'Male',1:'Female'},
+                                                                {0:'Others',1:'Chinese',2:'Malay',3:'Indian'},
+                                                                {0:'Others',1:'Student',2:'Employ-\ned',3:'Retired',4:'Unemp.'},
+                                                                {0:'Others',3:'Sec',4:'ITE',5:'High\nSch.',6:'Poly.',7:'Bach.\nDeg.',8:'Mast. Deg.',9:'PhD'},
+                                                                {-1:'N.A.',0:'Others',6:'Poly',7:'Bach.\nDeg.',8:'Mast. Deg.',9:'PhD'},
+                                                                {0:'Others',1:'Pub. Apt.',2:'Dorm',3:'Priv. Pty.',4:'Priv. Apt.'},
+                                                                {0:'No',1:'Yes'},
+                                                                {0:'< 10 yrs',1:'≥ 10 yrs'}],
+                                               height_scaless = [{0 :[3.5]+[10.0]*7, 1:[2.2]+[2.2]*7},
+                                                                 {-1:[3.5]+[10.0]*7, 0:[3.5]+[2.5]*7, 1:[2.2]+[2.2]*7},
+                                                                 {-1:[3.5]+[10.0]*7, 0:[2.2]+[2.2]*7, 1:[np.inf]+[3.0]*7},
+                                                                 {0 :[3.5]+[ 2.5]*7, 1:[2.2]+[2.4]*7},
+                                                                 {0 :[2.3]+[np.inf]*7, 1:[2.2]*8, 2:[np.inf]+[-1.5,-5,-6,-2,-4]+[np.inf]*2, 3:[np.inf]+[5,5,7,np.inf,np.inf]+[np.inf]*2},
+                                                                 {0 :np.inf,1:2.2,2:3.0},
+                                                                 {0 :[np.inf]+[5.0]*7, 5:[3.5]+[2.5]*7, 6:[2.2]+[3.0]*7, 7:[3.5]+[3.0]*7},
+                                                                 {-1:[3.5]+[3.0]*7, 0:[np.inf]+[10,4.5,4.5,np.inf,4.5]+[np.inf]*2,7:[2.0]+[2.5]*7},
+                                                                 {1 :[2.3]+[2.4]*7, 2:[2.3]+[3.5]*7,3:[np.inf]+[-0.5,-5,np.inf,np.inf,-2.5]+[np.inf]*2,4:[3.5]+[3.0]*7},
+                                                                 {0 :[2.2]+[3.0]*7,1:[2.3]+[2.2]*7},
+                                                                 {0 :[2.2]+[3.0]*7,1:[2.3]+[2.2]*7}],
+                                               bar_orders = [[1,0],
+                                                             [1,0,-1],
+                                                             [1,0,-1],
+                                                             [1,0],
+                                                             [0,1,2,3],
+                                                             [0,1,2],
+                                                             [0,5,6,7],
+                                                             [0,-1,7],
+                                                             [1,2,3,4],
+                                                             [1,0],
+                                                             [1,0]], 
+                                               grouped_cols = [[0],
+                                                               [0],
+                                                               [0],
+                                                               [0],
+                                                               [0],
+                                                               [0,3,4], 
+                                                               [0,3,4,8,9],
+                                                               [0,6,8,9],
+                                                               [0],
+                                                               [0],
+                                                               [0]],
+                                               figsize = (8,4),
+                                               save_to_file = True,
+                                               out_dir = os.path.join('..','figures'),
+                                               file_format = 'pdf',
+                                               verbose = False):
+    '''
+    Makes stacked bar plots for categorical data in a given
+    dataframe participants (assumed to contain data from
+    the participant information questionnaire for the dataset)
+    with the bar lengths denoting proportion in fold.
+    
+    ======
+    Inputs
+    ======
+    participants : pandas DataFrame
+        A dataframe containing the keys in cat_keys
+    cat_keys : list of str
+        The keys corresponding to the columns in participants
+        that plots will be made for. One plot will be made
+        for each key in this list.
+    ordinate_labels : list of str
+        Ordinate (y-axis) labels for the plots.
+    legend_labels : list of dict
+        Labels for the bars in each plot, where each dictionary
+        has keys corresponding to possible categories and 
+        values corresponding to the names of those categories
+        for the plot legend.
+    height_scaless : list of dict
+        Scale factors to control text label heights for bars
+        in each plot, where each dictionary has keys
+        corresponding to possible categories and values
+        corresponding to the scale factor for the bar for
+        that category
+    bar_orders : list of lists
+        Orders of stacked bars (from bottom to top). Category
+        labels can be omitted to not plot bars for those
+        labels.
+    grouped_cols : list of lists
+        Category labels to be considered as "Others" in the
+        plots.
+    figsize : tuple of float
+        The size of the plots when displayed (or outputted to
+        file).
+    save_to_file : bool
+        If True, saves the plots to files. If False, only
+        calls plt.show() without saving plots to files.
+    out_dir : str
+        The directory to output the plots to (if save_to_file
+        is True).
+    file_format : str
+        The file format that the plots are saved as (if
+        save_to_file is True).
+    verbose : bool
+        If True, prints raw data and axes coordinates (for
+        manual adjustment). If False, prints no additional
+        text beyond the plots.
+        
+    =======
+    Returns
+    =======
+    None
+    
+    ============
+    Dependencies
+    ============
+    matplotlib.pyplot (as plt), pandas (as pd), numpy (as np), autolabel (from araus_utils), autolabel (from araus_utils), os
+    '''
+    for cat_key, ordinate_label, legend_label, height_scales, bar_order, grouped_col in zip(cat_keys, ordinate_labels, legend_labels, height_scaless, bar_orders, grouped_cols):
+        # PROCESS DATA TO PLOT
+        summary_df = participants.value_counts(['fold_p',cat_key]).reset_index().pivot_table(index='fold_p',columns=cat_key)
+        if verbose:
+            print(f'summary_df (before adjustment) is as follows:')
+            print(summary_df)
+        add_df = pd.DataFrame({'fold_p': [6,7],cat_key:[0,0],0:[0,0]}).pivot_table(index='fold_p',columns=cat_key) # Create artificial entries at x = 6 and 7 to stretch the x axis s.t. the legends can be accommodated.
+        summary_df = pd.concat((summary_df,add_df)) # Add the artificial entries
+        summary_df = summary_df.fillna(0) # Fill NaNs with 0s to prevent errors with sums later
+        summary_df[(0,0)] = summary_df[[(0,i) for i in grouped_col]].sum(axis=1) # Summarise the columns (by summing) that are in grouped_cols
+        summary_df = summary_df[[(0,i) for i in bar_order]] # Reorder columns (= bar plot order)
+        summary_df_norm = summary_df.apply(lambda x: x/summary_df.sum(axis=1))
+        summary_df_norm = summary_df_norm.fillna(0)
+        if verbose:
+            print(f'summary_df (after adjustment) is as follows:')
+            print(summary_df)
+            print(f'summary_df_norm is as follows:')
+            print(summary_df_norm)
+
+        # MAKE STACKED BAR PLOT OF PROPORTIONS
+        row_labels = [key[1] for key in summary_df_norm.keys()] # These are the numerical versions for legend_labels
+        ax = summary_df_norm.plot.bar(stacked=True,edgecolor='black',figsize=figsize)
+        ax.set_ylim(0,1)
+        ax.set_ylabel(f'Proportion ({ordinate_label})')
+        ax.set_xlabel('Fold')
+        ax.set_xticklabels(labels=['Test',1,2,3,4,5,'',''],rotation=0)
+        ax.set_xticks([0,1,2,3,4,5])
+        ax.legend([legend_label[i] for i in bar_order], loc = 'upper right')
+        ax.set_axisbelow(True) # Makes grid go behind bars
+        plt.grid(visible=True)
+        if verbose:
+            disp_axes_details(ax)
+        
+        # ATTEMPT TO LABEL BARS
+        f_height = summary_df.astype(int).replace(0,'').to_numpy().T # Get counts from summary_df
+        try:
+            autolabel(ax.containers,
+                      ax,
+                      height_scales = [height_scales[i] for i in bar_order] if type(height_scales) == dict else height_scales,
+                      max_n = np.inf,
+                      f_height = f_height) 
+        except:
+            raise
+            if verbose: print(f'autolabel failed to label bar percentages for {cat_key}')
+        
+        # SAVE TO FILE AND/OR DISPLAY
+        if save_to_file:
+            if (not os.path.exists(out_dir)) and len(out_dir) > 0: os.makedirs(out_dir) # Make the output directory if it doesn't already exist
+            out_fname = f'demographic_{cat_key}_with_test.{file_format}'
+            out_fpath = os.path.join(out_dir, out_fname)
+            plt.savefig(out_fpath, bbox_inches='tight')
+        plt.show()
+        
+#==============================================================#===============================================================#
+
+def plot_changes_by_masker(attribute_df_by_masker,
+                           attribute_df_by_soundscape = None,
+                           attribute = 'ISOPl_delta',
+                           figsize = (30,6),
+                           plot_type = 'line',
+                           ymin = -1,
+                           ymax = 1,
+                           save_to_file = True,
+                           out_dir = os.path.join('..','figures'),
+                           file_format = 'png'):
+    '''
+    Makes line or box plots for attributes (assumed to be
+    changes in some attribute like ISO Pleasantness and ISO
+    Eventfulness) by masker.
+    
+    ======
+    Inputs
+    ======
+    attribute_df_by_masker : pd.DataFrame
+        A DataFrame containing the key in attribute and index
+        names 'masker' and 'class'.
+        In other words, attribute_df_by_masker.index.names ==
+        ['masker','class'] and attribute in 
+        attribute_df_by_masker.columns
+    attribute_df_by_soundscape : None or pd.DataFrame
+        Used only when plot_type is 'box'. In that case, this
+        must be a pd.DataFrame containing the keys 'masker',
+        'class', and the key in attribute. The index name
+        must be 'soundscape'. In other words,
+        attribute_df_by_soundscape.index.names ==
+        ['soundscape'] and [(key in
+        attribute_df_by_soundscape.columns) for key in
+        ['masker','class',attribute]]
+    attribute : str
+        The attribute to make the plot on. This must be a key
+        present in both attribute_df_by_masker, as well as
+        attribute_df_by_soundscape (if it is not None).
+    figsize : tuple of float
+        The size of the plots when displayed (or outputted to
+        file).
+    plot_type : str in ['line','box']
+        If 'line', will plot individual attribute changes as
+        a line.
+        If 'box', will plot individual attribute changes as
+        a box plot. This option also necessitates that
+        attribute_df_by_soundscape is not None, and 
+    ymin : float
+        Minimum height of y axis in figure.
+    ymax : float
+        Maximum height of y axis in figure.
+    save_to_file : bool
+        If True, saves the plots to files. If False, only
+        calls plt.show() without saving plots to files.
+    out_dir : str
+        The directory to output the plots to (if save_to_file
+        is True).
+    file_format : str
+        The file format that the plots are saved as (if
+        save_to_file is True).
+        
+    =======
+    Returns
+    =======
+    None
+    
+    ============
+    Dependencies
+    ============
+    matplotlib.pyplot (as plt), pandas (as pd), numpy (as np), seaborn (as sns), os
+    '''
+    ## EXCEPTION HANDLING
+    if plot_type not in ['line','box']:
+        print('Warning: plot_type not in ["line","box"], setting it to "line"...')
+        plot_type = 'line'
+    if plot_type == 'box' and attribute_df_by_soundscape is None:
+        print('Warning: plot_type is box but attribute_df_by_soundscape is not specified!')
+    
+    ## DRAW FIGURE
+    fig, ax = plt.subplots(figsize=figsize)
+    
+    ## PROCESS & PLOT DATA
+    y = attribute_df_by_masker[attribute].values
+    x = np.arange(len(y))
+    
+    if plot_type == 'line':
+        ax.plot(x,y)
+    elif plot_type == 'box':
+        masker_df_list = [] # Will eventually be a list of DataFrames, each DataFrame corresponding to all the soundscapes of a single masker
+        masker_names = attribute_df_by_soundscape['masker'].unique().tolist()
+        masker_names.sort()
+        for masker_name in masker_names:
+            masker_df_list.append(attribute_df_by_soundscape[attribute_df_by_soundscape['masker'] == masker_name])
+        sns.boxplot(data=[masker_df[attribute] for masker_df in masker_df_list], orient = 'v', ax = ax)
+    
+    ## ADJUST DISPLAY PARAMETERS
+    ax.set_xlim(0,len(x))
+    ax.set_ylim(ymin,ymax)
+    ax.set_xlabel('Masker')
+    ax.set_ylabel(attribute)
+    ax.set_xticks(ticks = x)
+    xlabels = [tup[0].split('.')[0] for tup in attribute_df_by_masker[attribute].index.tolist()]
+    ax.set_xticklabels(labels = xlabels, rotation = 90, fontsize = 4)
+    ax.grid()
+    ax.hlines(0,0,len(x),'r')
+    ax.vlines(np.cumsum([80,2,40,1,5,1,40,1,80,2,40])-0.5, # Hard-coded here to split between training and test set maskers by class.
+              ax.get_ylim()[0],
+              ax.get_ylim()[1],
+              ['g','r']*5+['g'],
+              linestyles=['dashed','solid']*5+['dashed'])
+    
+    ## SAVE TO FILE AND/OR DISPLAY
+    if save_to_file:
+        if (not os.path.exists(out_dir)) and len(out_dir) > 0: os.makedirs(out_dir) # Make the output directory if it doesn't already exist
+        out_fname = f'{attribute}_by_masker_{plot_type}.{file_format}'
+        out_fpath = os.path.join(out_dir, out_fname)
+        plt.savefig(out_fpath, bbox_inches='tight')
+    plt.show()
+    
+#==============================================================#===============================================================#
+
+def plot_circumplex_distribution(responses,
+                                 figsize = (8*0.75,6.5*0.75),
+                                 colorbar_ticklabels = 'freq',
+                                 scatter_marker_size = 0.05,
+                                 save_to_file = True,
+                                 out_dir = os.path.join('..','figures'),
+                                 out_fname = 'circumplex_distribution',
+                                 file_format = 'pdf',
+                                 **kwargs):
+    '''
+    Makes 2-dimensional histograms, overlaid with a scatter
+    plot if desired, for numerical data in a given dataframe
+    responses (assumed to contain ISO Pleasantness and ISO
+    Eventfulness values).
+    
+    ======
+    Inputs
+    ======
+    responses : pandas DataFrame
+        A dataframe containing the keys 'ISOPl' and 'ISOEv'.
+        These are resepctively the x- and y-axes of the plot.
+    figsize : tuple of float
+        The size of the plots when displayed (or outputted to
+        file).
+    colorbar_ticklabels : 'freq', 'prop', or list
+        If 'freq', labels on colorbar will be actual counts
+        of points in histogram. This matches the default
+        behaviour of plt.hist2d.
+        If 'prop', labels on colorbar will be proportion
+        (i.e., probability distribution) of points in
+        histogram, rounded to 3 decimal places.
+        If list, labels on colorbar will follow the
+        individual elements (provided the labels match the
+        exact tick locations).
+    scatter_marker_size : float
+        The size of individual points in the scatter plot.
+        Set to 0 to not overlay the scatter plot.
+    save_to_file : bool
+        If True, saves the plots to files. If False, only
+        calls plt.show() without saving plots to files.
+    out_dir : str
+        The directory to output the plots to (if save_to_file
+        is True).
+    out_fname : str
+        The file name to save the plots to (if save_to_file
+        is True), without a file format suffix.
+    file_format : str
+        The file format that the plots are saved as (if
+        save_to_file is True).
+        
+    =======
+    Returns
+    =======
+    None
+    
+    ============
+    Dependencies
+    ============
+    matplotlib.pyplot (as plt), pandas (as pd), numpy (as np), os
+    '''
+    # Draw 2D histogram
+    plt.figure(figsize=figsize)
+    plt.hist2d(responses['ISOPl'],responses['ISOEv'],bins=np.arange(-1,1.1,0.1),density=False,cmap=plt.cm.Greys_r,**kwargs)
+
+    # Add axis labels
+    plt.xlabel('ISO Pleasantness, $P$')
+    plt.ylabel('ISO Eventfulness, $E$')
+
+    # Add axis ticks
+    xyticks = np.arange(-1,1.5,0.5)
+    plt.xticks(ticks=xyticks)
+    plt.yticks(ticks=xyticks)
+
+    # Add colour bar
+    circumplex_colorbar = plt.colorbar()
+    colorbar_ticks = circumplex_colorbar.get_ticks()
+    if colorbar_ticklabels == 'freq':
+        colorbar_ticklabels = colorbar_ticks
+    elif colorbar_ticklabels == 'prop':
+        colorbar_ticklabels = [f'{x:.3f}' for x in np.round(colorbar_ticks/len(responses),decimals=3)]
+    circumplex_colorbar.set_ticks(colorbar_ticks,labels=colorbar_ticklabels)
+
+    # Draw axes at centre
+    plt.axhline(y=0,xmin=0,xmax=1,c='w')
+    plt.axvline(x=0,ymin=0,ymax=1,c='w')
+
+    # Overlay scatter plot of actual points
+    plt.scatter(responses['ISOPl'],responses['ISOEv'],s=scatter_marker_size,c='y')
+        
+    # SAVE TO FILE AND/OR DISPLAY
+    if save_to_file:
+        if (not os.path.exists(out_dir)) and len(out_dir) > 0: os.makedirs(out_dir) # Make the output directory if it doesn't already exist
+        out_fname = f'{out_fname}.{file_format}'
+        out_fpath = os.path.join(out_dir, out_fname)
+        plt.savefig(out_fpath, bbox_inches='tight')
+    plt.show()
+
+#==============================================================#===============================================================#
+
 def plot_consistency_metrics(consistency,
                              const_keys = ['first_vs_last','pleasant_vs_annoying','eventful_vs_uneventful','calm_vs_chaotic','vibrant_vs_monotonous','ISOPl_vs_pl','ISOEv_vs_ev'],
                              ordinate_labels = ['MAD bet. 1st & last stimuli',
@@ -1015,6 +1405,7 @@ def plot_consistency_metrics(consistency,
                              figsize = (8,4),
                              save_to_file = True,
                              out_dir = os.path.join('..','figures'),
+                             include_test_set = False,
                              file_format = 'pdf'):
     '''
     Makes violin plots of consistency metrics in a given
@@ -1042,6 +1433,9 @@ def plot_consistency_metrics(consistency,
     out_dir : str
         The directory to output the plots to (if save_to_file
         is True).
+    include_test_set : bool
+        If True, violin plots for the test set (i.e., fold 0)
+        will be included. If False, they will be excluded.
     file_format : str
         The file format that the plots are saved as (if
         save_to_file is True).
@@ -1056,14 +1450,23 @@ def plot_consistency_metrics(consistency,
     ============
     matplotlib.pyplot (as plt), pandas (as pd), seaborn (as sns), os
     '''
+    # SET PARAMETERS DEPENDING ON WHETHER TEST SET IS TO BE INCLUDED
+    include_test_set = bool(include_test_set)
+    if include_test_set:
+        min_fold_idx = 0 # For sns.violinplot
+        xmax = 6 # For plt.xticks
+    else:
+        min_fold_idx = 1
+        xmax = 5
+    
     for key, ordinate_label in zip(const_keys, ordinate_labels):
         # MAKE PLOT
         plt.figure(figsize=figsize)
-        sns.violinplot(data=[consistency[consistency['fold_p'] == i][key] for i in range(1,6)],
+        sns.violinplot(data=[consistency[consistency['fold_p'] == i][key] for i in range(min_fold_idx,6)],
                        saturation = 1,
                        cut = 0) # cut=0 prevents extrapolation outside observed data boundaries
         plt.xlabel('Fold')
-        plt.xticks(ticks=range(0,5),labels=range(1,6))
+        plt.xticks(ticks = range(0,xmax), labels = ['Test']*include_test_set + [i for i in range(1,6)])
         plt.ylabel(ordinate_label)
 
         plt.ylim([0,2.25])
@@ -1073,7 +1476,7 @@ def plot_consistency_metrics(consistency,
         # SAVE TO FILE AND/OR DISPLAY
         if save_to_file:
             if (not os.path.exists(out_dir)) and len(out_dir) > 0: os.makedirs(out_dir) # Make the output directory if it doesn't already exist
-            out_fname = f'consistency_{key}.{file_format}'
+            out_fname = f'consistency_{key}{"_with_test"*include_test_set}.{file_format}'
             out_fpath = os.path.join(out_dir, out_fname)
             plt.savefig(out_fpath,bbox_inches='tight')
         plt.show()
@@ -1088,6 +1491,7 @@ def plot_continuous_participant_info(participants,
                                      figsize = (8,4),
                                      save_to_file = True,
                                      out_dir = os.path.join('..','figures'),
+                                     include_test_set = False,
                                      file_format = 'pdf'):
     '''
     Makes violin plots for numerical data in a given dataframe
@@ -1118,6 +1522,9 @@ def plot_continuous_participant_info(participants,
     out_dir : str
         The directory to output the plots to (if save_to_file
         is True).
+    include_test_set : bool
+        If True, violin plots for the test set (i.e., fold 0)
+        will be included. If False, they will be excluded.
     file_format : str
         The file format that the plots are saved as (if
         save_to_file is True).
@@ -1132,15 +1539,23 @@ def plot_continuous_participant_info(participants,
     ============
     matplotlib.pyplot (as plt), pandas (as pd), seaborn (as sns), os
     '''
+    # SET PARAMETERS DEPENDING ON WHETHER TEST SET IS TO BE INCLUDED
+    include_test_set = bool(include_test_set)
+    if include_test_set:
+        min_fold_idx = 0 # For sns.violinplot
+        xmax = 6 # For plt.xticks
+    else:
+        min_fold_idx = 1
+        xmax = 5
 
     for key, ordinate_label, ymin, ymax in zip(cont_keys, ordinate_labels, ymins, ymaxs):
         # MAKE PLOT
         plt.figure(figsize = figsize)
-        sns.violinplot(data = [participants[participants['fold_p'] == i][key] for i in range(1,6)],
+        sns.violinplot(data = [participants[participants['fold_p'] == i][key] for i in range(min_fold_idx,6)],
                        saturation = 1,
                        cut = 0) # cut = 0 prevents extrapolation outside observed data boundaries
         plt.xlabel('Fold')
-        plt.xticks(ticks = range(0,5), labels = range(1,6))
+        plt.xticks(ticks = range(0,xmax), labels = ['Test']*include_test_set + [i for i in range(1,6)])
         plt.ylabel(ordinate_label)
         if key != 'age':
             plt.axhline(ymin, color='red', linestyle='--')
@@ -1150,17 +1565,214 @@ def plot_continuous_participant_info(participants,
         # SAVE TO FILE AND/OR DISPLAY
         if save_to_file:
             if (not os.path.exists(out_dir)) and len(out_dir) > 0: os.makedirs(out_dir) # Make the output directory if it doesn't already exist
-            out_fname = f'demographic_{key}.{file_format}'
+            out_fname = f'demographic_{key}{"_with_test"*include_test_set}.{file_format}'
             out_fpath = os.path.join(out_dir, out_fname)
             plt.savefig(out_fpath, bbox_inches='tight')
         plt.show()
 
 #==============================================================#===============================================================#
 
+def plot_pca_heatmap(U=np.random.randn(9,264),
+                     k=None,
+                     symmetric=True,
+                     cmap=None,
+                     cbar_kws={'pad':0.01},
+                     figsize=(30,7),
+                     title='Heatmap of principal components',
+                     vline_locs=[0,13,27,40,54,68,81,95,132+0,132+13,132+27,132+40,132+54,132+68,132+81,132+95,132+132],
+                     xticklabels_minor=['Savg','Smax','S05','S10','S20','S30','S40','S50','S60','S70','S80','S90','S95',
+                                        'Navg','Nrmc','Nmax','N05','N10','N20','N30','N40','N50','N60','N70','N80','N90','N95',
+                                        'Favg','Fmax','F05','F10','F20','F30','F40','F50','F60','F70','F80','F90','F95',
+                                        'LAavg','LAmin','LAmax','LA05','LA10','LA20','LA30','LA40','LA50','LA60','LA70','LA80','LA90','LA95',
+                                        'LCavg','LCmin','LCmax','LC05','LC10','LC20','LC30','LC40','LC50','LC60','LC70','LC80','LC90','LC95',
+                                        'Ravg','Rmax','R05','R10','R20','R30','R40','R50','R60','R70','R80','R90','R95',
+                                        'Tgavg','Tavg','Tmax','T05','T10','T20','T30','T40','T50','T60','T70','T80','T90','T95',
+                                        'M00005_0','M00006_3','M00008_0','M00010_0','M00012_5','M00016_0','M00020_0','M00025_0','M00031_5','M00040_0',
+                                        'M00050_0','M00063_0','M00080_0','M00100_0','M00125_0','M00160_0','M00200_0','M00250_0','M00315_0','M00400_0',
+                                        'M00500_0','M00630_0','M00800_0','M01000_0','M01250_0','M01600_0','M02000_0','M02500_0','M03150_0','M04000_0',
+                                        'M05000_0','M06300_0','M08000_0','M10000_0','M12500_0','M16000_0','M20000_0']*2,
+                     xticklabels_minor_locs = None,
+                     xticklabels_minor_fontsize = 6,
+                     xticklabels_major=['Sharpness\n(1st half)','Loudness\n(1st half)','Fluctuation\nStrength\n(1st half)','A-weighted\n$L_{eq}$\n(1st half)','C-weighted\n$L_{eq}$\n(1st half)','Roughness\n(1st half)','Tonality\n(1st half)','Spectral powers\n(1st half)',
+                                        'Sharpness\n(2nd half)','Loudness\n(2nd half)','Fluctuation\nStrength\n(2nd half)','A-weighted\n$L_{eq}$\n(2nd half)','C-weighted\n$L_{eq}$\n(2nd half)','Roughness\n(2nd half)','Tonality\n(2nd half)','Spectral powers\n(2nd half)'],
+                     xticklabels_major_locs = None,
+                     xticklabels_major_fontsize = 12,
+                     xticklabels_major_hoffset = 0.1,
+                     xticklabels_major_voffset = -0.1,
+                     save_to_file = True,
+                     out_dir = os.path.join('..','figures'),
+                     out_fname = 'Heatmap of principal components',
+                     file_format = 'pdf'):
+    '''
+    Makes a heatmap of a principal components matrix U.
+
+    ======
+    Inputs
+    ======
+    U : 2-dimensional np.ndarray
+        The principal components matrix for which the heatmap is
+        to be plotted, with the rows corresponding to the
+        principal components and the columns corresponding to
+        the weights of the input variables in those principal
+        components.
+    k : None or int
+        The number of components of the principal components
+        matrix to plot in the heatmap. If None, will plot all
+        components.
+    symmetric : bool
+        If True, will ensure that the colour range is symmetric
+        about zero. If False, uses the default seaborn range.
+    cmap : None, plt.colors.LinearSegmentedColormap,
+           plt.colors.ListedColormap, or similar
+        The colour map to use for the heatmap. If None, will
+        use a standard diverging colour map if symmetric is
+        True, and the rocket colour map if symmetric is False.
+    cbar_kws : dict
+        Will be passed to sns.heatmap as the identically-named
+        input argument.
+    figsize : tuple of float
+        The size of the plot when displayed (or outputted to
+        file).
+    title : str
+        The title of the figure. Specify an empty string to
+        not show a title.
+    vline_locs : list of int
+        The boundaries of the major x-axis tick sections
+        of the heatmap. White dotted vertical lines will be
+        drawn at the indices specified in this list, except
+        for the first and last index.
+        Specify an empty list to draw no additional lines.
+    xticklabels_minor : list of str
+        The labels for the minor ticks of the x-axis. These
+        are typically the individual input variable names
+        and will be plotted with a 90-degree rotation.
+    xticklabels_minor_locs : None or list of int
+        The locations on the x-axis to draw the labels in
+        xticklabels_minor. If None, defaults to the mid-
+        point of each individual input variable.
+    xticklabels_minor_fontsize : int
+        The font size for the minor ticks of the x-axis.
+    xticklabels_major : list of str
+        The labels for the major ticks of the x-axis. These
+        are typically the group names of the input variables
+        and will be plotted with a 90-degree rotation.
+    xticklabels_major_locs : None or list of float
+        The locations on the x-axis to draw the labels in
+        xticklabels_major. If None, defaults to the mid-
+        point of each box specified by the boundaries in
+        vline_locs, with the offset specified in
+        xticklabels_major_voffset.
+    xticklabels_major_fontsize : int
+        The font size for the major ticks of the x-axis.
+    xticklabels_major_hoffset : float
+        The horizontal offset of the major x-axist tick
+        labels from the mid-point of the boundaries
+        specified in vline_locs. A negative value adjusts
+        the labels left and a positive value adjusts them
+        to the right. A non-zero value may need to be 
+        specified here to prevent clashes with locations of
+        the minor ticks of the x-axes as well (since 
+        clashes will cause the major tick labels to over-
+        write the minor ones).
+    xticklabels_major_voffset : float
+        The vertical offset of the major x-axis tick labels
+        from the minor ones. A negative value adjusts the
+        vertical offset of all major labels down such that
+        they go below the minor labels, and a positive value
+        adjust them above.
+    save_to_file : bool
+        If True, saves the plot to file. If False, only
+        calls plt.show() without saving plot to file.
+    out_dir : str
+        The directory to output the plot to (if save_to_file
+        is True).
+    out_fname : str
+        The file name to save the plot to (if save_to_file
+        is True), without a file format suffix.
+    file_format : str
+        The file format that the plot is saved as (if
+        save_to_file is True).
+        
+    =======
+    Returns
+    =======
+    None
+    
+    ============
+    Dependencies
+    ============
+    matplotlib.pyplot (as plt), numpy (as np), seaborn (as sns)
+    
+    =======
+    Example
+    =======
+    >>> plot_pca_heatmap() # Plot a sample heatmap with dummy data.
+    '''
+    # EXCEPTION HANDLING
+    if k is None:
+        k = len(U)
+    U = U[:k,:]
+    yticklabels=np.arange(1,k+1)
+                      
+    if symmetric:
+        vmin, vmax = -np.max(np.abs(U)), np.max(np.abs(U)) 
+        if cmap is None: 
+            cmap = sns.diverging_palette(h_neg = 260, h_pos = 15, s = 100, l = 60, n = 10, center = "dark", as_cmap = True)
+    else:
+        vmin, vmax = None, None
+        if cmap is None:
+            cmap = sns.color_palette("rocket", as_cmap=True)
+            
+    if xticklabels_minor_locs is None:
+        xticklabels_minor_locs = np.arange(len(xticklabels_minor))+0.5 
+        # Addition of 0.5 places tick in middle of box of heatmap.
+    if xticklabels_major_locs is None:
+        xticklabels_major_locs = np.convolve(vline_locs,[0.5,0.5],mode='valid')+xticklabels_major_hoffset
+        # Overlapping locations with minor tick labels will overwrite them;
+        # we add a small xticklabels_major_hoffset to each lcoation here to prevent the clash
+    
+    # MAKE HEATMAP
+    plt.figure(figsize=figsize)
+    plt.title(title)
+    ax = sns.heatmap(U,
+                     xticklabels=False, # Don't plot any xticklabels here because we need to do some manual adjustment for prettier presentation
+                     yticklabels=yticklabels,
+                     vmin=vmin,
+                     vmax=vmax,
+                     cmap=cmap,
+                     cbar_kws=cbar_kws)
+    
+    # MANUALLY SET XTICKS
+    ax.set_xticks(xticklabels_minor_locs, labels = xticklabels_minor, minor = True, rotation = 90, fontsize = xticklabels_minor_fontsize)
+    ax.set_xticks(xticklabels_major_locs, labels = xticklabels_major, minor = False, rotation = 0, fontsize = xticklabels_major_fontsize)
+    
+    # SET VERTICAL OFFSET FOR MAJOR XTICKS
+    xticklabels_major_objs = ax.get_xticklabels(minor=False)
+    for t in xticklabels_major_objs:
+        t.set_y(xticklabels_major_voffset) 
+    ax.tick_params(axis='x', which='major', colors='k', length=0) # Set major x-tick lengths to 0 to not have long vertical lines sticking out of the plot
+    
+    # DRAW MAJOR XTICK BOUNDARIES
+    for xlim in vline_locs[1:-1]: # Don't need to draw the left and right borders
+        plt.axvline(x=xlim,color='w',linestyle='-.')
+    
+    plt.xlabel('Original feature name')
+    plt.ylabel('Principal component #')
+        
+    # SAVE TO FILE AND/OR DISPLAY
+    if save_to_file:
+        if (not os.path.exists(out_dir)) and len(out_dir) > 0: os.makedirs(out_dir) # Make the output directory if it doesn't already exist
+        out_fname = f'{out_fname}.{file_format}'
+        out_fpath = os.path.join(out_dir, out_fname)
+        plt.savefig(out_fpath, bbox_inches='tight')
+    plt.show()
+
+#==============================================================#===============================================================#
 def plot_times_taken(times,
                      figsize = (8,4),
                      save_to_file = True,
                      out_dir = os.path.join('..','figures'),
+                     include_test_set = False,
                      file_format = 'pdf'):
     '''
     Make violin plot of mean time taken per stimulus in a given
@@ -1183,6 +1795,9 @@ def plot_times_taken(times,
     out_dir : str
         The directory to output the plot to (if save_to_file
         is True).
+    include_test_set : bool
+        If True, violin plots for the test set (i.e., fold 0)
+        will be included. If False, they will be excluded.
     file_format : str
         The file format that the plot is saved as (if
         save_to_file is True).
@@ -1197,20 +1812,29 @@ def plot_times_taken(times,
     ============
     matplotlib.pyplot (as plt), pandas (as pd), seaborn (as sns), os
     '''    
+    # SET PARAMETERS DEPENDING ON WHETHER TEST SET IS TO BE INCLUDED
+    include_test_set = bool(include_test_set)
+    if include_test_set:
+        min_fold_idx = 0 # For sns.violinplot
+        xmax = 6 # For plt.xticks
+    else:
+        min_fold_idx = 1
+        xmax = 5
+    
     # MAKE PLOT
     plt.figure(figsize=figsize)
-    sns.violinplot(data=[times[times['fold_p'] == i]['time_taken'] for i in range(1,6)],
+    sns.violinplot(data=[times[times['fold_p'] == i]['time_taken'] for i in range(min_fold_idx,6)],
                    saturation = 1,
                    cut=0) # cut=0 prevents extrapolation outside observed data boundaries
     plt.xlabel('Fold')
-    plt.xticks(ticks=range(0,5),labels=range(1,6))
+    plt.xticks(ticks = range(0,xmax), labels = ['Test']*include_test_set + [i for i in range(1,6)])
     plt.ylabel('Mean time per stimulus (s)')
     plt.grid(visible=True)
     
     # SAVE TO FILE AND/OR DISPLAY
     if save_to_file:
         if (not os.path.exists(out_dir)) and len(out_dir) > 0: os.makedirs(out_dir) # Make the output directory if it doesn't already exist
-        out_fname = f'times_taken.{file_format}'
+        out_fname = f'times_taken{"_with_test"*include_test_set}.{file_format}'
         out_fpath = os.path.join(out_dir, out_fname)
         plt.savefig(out_fpath,bbox_inches='tight')
     plt.show()
