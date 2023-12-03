@@ -1,4 +1,4 @@
-import argparse, os, shutil
+import argparse, os, glob, shutil
 import pandas as pd
 from araus_utils import download_file, unzip, split_usotw_track
 
