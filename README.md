@@ -1,12 +1,16 @@
 # araus-dataset-baseline-models
 
-This repository stores code to download the ARAUS dataset and train baseline models for the dataset. For more details on the dataset, please refer to our publication (a preprint can be found on arXiv at <a href="https://doi.org/10.48550/arXiv.2207.01078">https://doi.org/10.48550/arXiv.2207.01078</a>:
+This repository stores code to download the ARAUS dataset (v1 and v2) and train baseline models for the dataset (v1 only). For more details on the initial publication of the dataset (ARAUSv1), please refer to our publication (a preprint can be found on arXiv at <a href="https://doi.org/10.48550/arXiv.2207.01078">https://doi.org/10.48550/arXiv.2207.01078</a>):
 
-> Kenneth Ooi, Zhen-Ting Ong, Karn N. Watcharasupat, Bhan Lam, Joo Young Hong, Woon-Seng Gan, ARAUS: A large-scale dataset and baseline models of affective responses to augmented urban soundscapes, _IEEE Transactions on Affective Computing_, [Under review].
+> Kenneth Ooi, Zhen-Ting Ong, Karn N. Watcharasupat, Bhan Lam, Joo Young Hong, Woon-Seng Gan, ARAUS: A large-scale dataset and baseline models of affective responses to augmented urban soundscapes, _IEEE Transactions on Affective Computing_, 2023.
+
+For more details on ARAUSv2, please refer to the following publication (a preprint can be found at <a href="https://hdl.handle.net/10356/168665">https://hdl.handle.net/10356/168665</a>):
+
+> Kenneth Ooi, Zhen-Ting Ong, Karn N. Watcharasupat, Bhan Lam, Trevor Wong, Woon-Seng Gan. ARAUSv2: An Expanded Dataset and Multimodal Models of Affective Responses to Augmented Urban Soundscapes. In _Proceedings of the 52nd International Congress and Exposition on Noise Control Engineering (Inter-Noise)_, Chiba (2023).
 
 The ARAUS dataset makes use of urban soundscape recordings from the <a href="https://urban-soundscapes.s3.eu-central-1.wasabisys.com/soundscapes/index.html">Urban Soundscapes of the World (USotW) database</a>. If you use the ARAUS dataset or the USotW recordings in your work, please cite the following publication:
 
-> Bert De Coensel, Kang Sun and Dick Botteldooren. Urban Soundscapes of the World: selection and reproduction of urban acoustic environments with soundscape in mind. In _Proceedings of the 46th International Congress and Exposition on Noise Control Engineering (Inter-noise)_, Hong Kong (2017).
+> Bert De Coensel, Kang Sun and Dick Botteldooren. Urban Soundscapes of the World: selection and reproduction of urban acoustic environments with soundscape in mind. In _Proceedings of the 46th International Congress and Exposition on Noise Control Engineering (Inter-Noise)_, Hong Kong (2017).
 
 The ARAUS dataset also makes use of masker recordings taken from <a href="https://freesound.org/">Freesound</a> or <a href="https://xeno-canto.org/">Xeno-canto</a>. If you use the ARAUS dataset or the masker recordings in your work, please ensure that you comply with the <a href="#license">license</a> (mainly Creative Commons licenses) and <a href="#citation">citation</a> terms of the individual source files. We have collated these terms as part of the ARAUS dataset for easy reference, but make no representation or guarantee as to their accuracy or currency. In the event of any discrepancy, please defer to the metadata of the original source files hosted on their corresponding databases.
 
@@ -41,13 +45,17 @@ Then, to run the replication code and baseline models, as reported in our public
 
     jupyter lab --notebook-dir .. replication_code.ipynb
 
-Alternatively, if you wish to only generate the augmented soundscapes to which the subjective responses in the ARAUS dataset were collected (e.g. for your own analysis or exploration), you may then enter the following line into a terminal (this will generate ~132 GB of data as WAV files):
+Alternatively, if you wish to only generate the augmented soundscapes to which the subjective responses in the ARAUSv1 dataset were collected (e.g. for your own analysis or exploration), you may then enter the following line into a terminal (this will generate ~132 GB of data as WAV files):
 
     python make_augmented_soundscapes.py
 
-The augmented soundscapes may be generated in <a href="https://xiph.org/flac/">FLAC</a> format instead (~50 GB of data):
+The augmented soundscapes in the ARAUSv1 dataset may be generated in <a href="https://xiph.org/flac/">FLAC</a> format instead (~50 GB of data):
 
     python make_augmented_soundscapes.py -of flac
+	
+To generate the augmented soundscapes for ARAUSv2 (~166 GB), you may enter the following line into a terminal:
+
+    python make_augmented_soundscapes.py ..\datav2\responses.csv ..\datav2\soundscapes.csv ..\datav2\maskers.csv -f 0 1 2 3 4 5 6 7
 
 We have also added a Jupyter Notebook containing extra code and discussions outside the scope of our publication, which you may access by entering the following line into a terminal (this opens a Jupyter Notebook in your default browser):
 
@@ -82,7 +90,16 @@ We have also added a Jupyter Notebook containing extra code and discussions outs
     │   ├── manifest.csv
     │   └── replication_code.ipynb
     │
-    ├── data                                               # Folder containing all CSV data in the ARAUS dataset
+    ├── data                                               # Folder containing all CSV data in the ARAUS dataset (v1)
+    │   ├── maskers.csv
+    │   ├── participants.csv
+    │   ├── participants_rejected.csv
+    │   ├── participants_rejected_reasons.csv
+    │   ├── responses.csv
+    │   ├── responses_rejected.csv
+    │   └── soundscapes.csv
+	│
+    ├── datav2                                             # Folder containing all CSV data in the ARAUS dataset (v2)
     │   ├── maskers.csv
     │   ├── participants.csv
     │   ├── participants_rejected.csv
@@ -96,20 +113,20 @@ We have also added a Jupyter Notebook containing extra code and discussions outs
     │   ├── ...
     │   └── times_taken_with_test.png
     │
-    ├── maskers                                            # Folder containing all maskers used in the ARAUS dataset (293 files; all mono, 44.1kHz, 30 seconds in length).
+    ├── maskers                                            # Folder containing all maskers used in the ARAUS dataset (407 files; all mono, 44.1kHz, 30 seconds in length).
     │   ├── bird_00001.wav
     │   ├── ...
-    │   └── wind_10001.wav
+    │   └── wind_20016.wav
     │
-    ├── soundscapes                                        # Folder containing all soundscapes used in the ARAUS dataset (248 files; all binaural, 44.1 kHz, 30 seconds in length).
+    ├── soundscapes                                        # Folder containing all soundscapes used in the ARAUS dataset (396 files; all binaural, 44.1 kHz, 30 seconds in length).
     │   ├── R0001_segment_binaural_44100_1.wav
     │   ├── ...
-    │   └── R1008_segment_binaural_44100.wav
+    │   └── S0062_1min_SQobold_bin_44100_2.wav
     │ 
-    ├── soundscapes_raw                                    # Folder containing soundscapes from the Urban Soundscapes of the World database (121 files; all binaural, 48 kHz, 60 seconds in length).
+    ├── soundscapes_raw                                    # Folder containing soundscapes from the Urban Soundscapes of the World database and the Lion City Soundscapes dataset (195 files; all binaural, 48 kHz, 60 seconds in length).
     │   ├── R0001_segment_binaural.wav
     │   ├── ...
-    │   └── R0133_segment_binaural.wav
+    │   └── S0062_1min_SQobold_bin.wav
     │
     ├── CITATION.cff                                       # Citation information for the dataset in plain text.
     ├── README.md                                          # This file.
@@ -120,12 +137,20 @@ For more details on the contents of each CSV file, please refer to the sections 
 
 # Data files
 
-All metadata on the soundscapes and maskers used for this dataset, as well as all subjective perceptual responses collected as part of this dataset, is organised into four CSV files:
+All metadata on the soundscapes and maskers used for this dataset (ARAUSv1 in the `data` folder and ARAUSv2 in the `datav2` folder), as well as all subjective perceptual responses collected as part of this dataset, is organised into four CSV files:
 
-- <a href="#maskers">`maskers.csv`</a> : Infomation about the maskers used in the dataset (consisting of 280 non-silent maskers in the five-fold cross-validation set, 7 non-silent maskers in the independent test set, and 6 silent ``maskers'' used when no masker is to be added to an urban soundscape).
-- <a href="#soundscapes">`soundscapes.csv`</a> : Information about the soundscapes used in the dataset (consisting of 234 soundscapes from the <a href="https://urban-soundscapes.s3.eu-central-1.wasabisys.com/soundscapes/index.html">Urban Soundscapes of the World database</a> in the five-fold cross-validation set, 6 soundscapes recorded by us in the independent test set, and 7 soundscapes not used in either set (<a href="#fold_s">this section</a> explains why)).
-- <a href="#participants">`participants.csv`</a> : Information about the participants (consisting of 600 in the five-fold cross-validation set and 5 in the independent test set) who provided their responses to the stimuli used in this dataset.
-- <a href="#responses">`responses.csv`</a> : Information about the individual stimuli and responses (consisting of 25,200 responses in the five-fold cross-validation set, 240 responses in the independent test set, and 1,815 responses to auxiliary stimuli used for practice and data quality checks) used in this dataset.
+- <a href="#maskers">`maskers.csv`</a> : Infomation about the maskers used in the dataset 
+  - For ARAUSv1, this consists of 280 non-silent maskers in the five-fold cross-validation set, 7 non-silent maskers in the independent test set, and 6 silent "maskers" used when no masker is to be added to an urban soundscape.
+  - For ARAUSv2, this consists of 280 non-silent maskers in the ARAUSv1 five-fold cross-validation set, 7 non-silent maskers in the ARAUSv1 test set, 112 non-silent maskers in the ARAUSv2 test set, and 8 silent "maskers" used when no masker is to be added to an urban soundscape.
+- <a href="#soundscapes">`soundscapes.csv`</a> : Information about the soundscapes used in the dataset
+  - For ARAUSv1, this consists of 234 soundscapes from the <a href="https://urban-soundscapes.s3.eu-central-1.wasabisys.com/soundscapes/index.html">Urban Soundscapes of the World database</a> in the five-fold cross-validation set, 6 soundscapes recorded by us in the independent test set, and 7 soundscapes not used in either set (<a href="#fold_s">this section</a> explains why)).
+  - For ARAUSv2, this consists of the above 247 soundscapes, and 96 soundscapes from the <a href="https://doi.org/10.21979/N9/AVHSBX">Lion City Soundscapes dataset</a> in the ARAUSv2 test set.
+- <a href="#participants">`participants.csv`</a> : Information about the participants who provided their responses to the stimuli used in the ARAUS dataset.
+  - For ARAUSv1, this consists of 600 participants in the five-fold cross-validation set and 5 in the independent test set 
+  - For ARAUSv2, this consists of 680 participants in the ARAUSv1 five-fold cross-validation set, 5 in the ARAUSv1 test set, and 64 in the ARAUSv2 test set.
+- <a href="#responses">`responses.csv`</a> : Information about the individual stimuli and responses used in the ARAUS dataset.
+  - For ARAUSv1, this consists of 25,200 responses in the five-fold cross-validation set, 240 responses in the independent test set, and 1,815 responses to auxiliary stimuli used for practice and data quality checks
+  - For ARAUSv2, this consists of 28,560 responses in the ARAUSv1 five-fold cross-validation set, 240 responses in the ARAUSv1 test set, 2,688 responses in the ARAUSv2 test set, and 2,247 responses to auxiliary stimuli used for practice and data quality checks
 
 Further details on the CSV files can be found below the corresponding subheaders in this section.
 
@@ -138,7 +163,9 @@ The CSV files can also be considered as individual database tables in an SQL dat
 
 There are three additional files containing rejected data from the dataset that we include in this repository for transparency and accountability, but that we do not recommend using:
 
-- <a href="#participants">`participants_rejected.csv`</a> : Information about participants (consisting of 37 in the five-fold cross-validation set and 0 in the independent test set) whose responses were rejected from the dataset.
+- <a href="#participants">`participants_rejected.csv`</a> : Information about participants whose responses were rejected from the dataset.
+  - For ARAUSv1, this consists of 37 in the five-fold cross-validation set and 0 in the independent test set
+  - For ARAUSv2, this consists of 41 in the ARAUSv1 five-fold cross-validation set, 0 in the ARAUSv1 test set, and 8 in the ARAUSv2 test set.
 - <a href="#participants_rejected_reasons">`participants_rejected_reasons.csv`</a> : Information about reasons why participants' responses were rejected from the dataset.
 - <a href="#responses">`responses_rejected.csv`</a> : Information about the responses that were rejected from this dataset
 
@@ -158,15 +185,17 @@ Hence, we recommend using the maskers downloaded using `./code/download.py` (or 
 
 - `masker` : unique strings <a name="masker_field">
   - The name of the file containing the masker.
-- `fold_m` : integers in {0, 1, 2, 3, 4, 5}
+- `fold_m` : integers in {0, 1, 2, 3, 4, 5, 6, 7}
   - The fold index of the masker. The sets of maskers in each fold are pairwise disjoint.
   - Keys:
-    - `0` : Test set.
+    - `0` : ARAUSv1 test set.
     - `1` : Fold 1 of the 5-fold cross-validation set.
     - `2` : Fold 2 of the 5-fold cross-validation set.
     - `3` : Fold 3 of the 5-fold cross-validation set.
     - `4` : Fold 4 of the 5-fold cross-validation set.
     - `5` : Fold 5 of the 5-fold cross-validation set.
+	- `6` : Fold 1 of the ARAUSv2 test set.
+	- `7` : Fold 2 of the ARAUSv2 test set.
 - `class` : strings in {"bird", "construction", "silence", "traffic", "water", "wind"}
   - The class that the masker belongs to.
   - There is only one masker in the "silence" class for each fold and its corresponding audio file is a sequence of all zeros.
@@ -297,19 +326,22 @@ This CSV file contains information related to the urban soundscapes used to gene
 
 - `soundscape` : unique strings <a name="soundscape_field">
   - The name of the file containing the urban soundscape.
-- `fold_s` : integers in {-1, 0, 1, 2, 3, 4, 5}<a name="fold_s">
+- `fold_s` : integers in {-1, 0, 1, 2, 3, 4, 5, 6, 7}<a name="fold_s">
   - The fold index of the urban soundscape. The sets of urban soundscapes in each fold are pairwise disjoint.
   - Keys:
     - `-1` : Not in any fold. This could be because (a) the stimulus has an in-situ L<sub>A,eq</sub> below 52 dB (to ensure that reproduction levels were significantly above the noise floor where the listening experiments were conducted), (b) the stimulus has an in-situ L<sub>A,eq</sub> above 77 dB (to ensure safe listening levels for our participants), or (c) the stimulus was used as the practice (first), attention (middle), and consistency check (last) stimulus for all participants (to prevent data leakage since it is present in all folds).
-    - `0` : Test set.
+    - `0` : ARAUSv1 test set.
     - `1` : Fold 1 of the 5-fold cross-validation set.
     - `2` : Fold 2 of the 5-fold cross-validation set.
     - `3` : Fold 3 of the 5-fold cross-validation set.
     - `4` : Fold 4 of the 5-fold cross-validation set.
     - `5` : Fold 5 of the 5-fold cross-validation set.
+	- `6` : Fold 1 of the ARAUSv2 test set.
+	- `7` : Fold 2 of the ARAUSv2 test set.
 - `insitu_leq` : floating point numbers <a name="insitu_leq">
   - For soundscapes in fold 0, this value is the in-situ L<sub>A,eq</sub> (in decibels) of the urban soundscape, measured at the same time as the recording was made.
   - For soundscapes in folds -1, 1, 2, 3, 4, and 5, this value was obtained by first calibrating the 1-minute long binaural recordings available in the <a href="https://urban-soundscapes.s3.eu-central-1.wasabisys.com/soundscapes/index.html">Urban Soundscapes of the World database</a> to the L<sub>Aeq,1-min</sub> values provided on the database website (as the file `SotW_LAeq_binaural_average_LR.xlsx` available <a href="https://urban-soundscapes.org/recordings/">here</a>), then measuring the L<sub>Aeq,30-s</sub> of each half of the calibated file (corresponding to the file name in <a href="#soundscape_field">`soundscape`</a>).
+  - For soundscapes in folds 6 and 7, this value was obtained by first calibrating the 1-minute long binaural recordings available in the <a href="https://doi.org/10.21979/N9/AVHSBX">Lion City Soundscapes dataset</a> to the L<sub>Aeq,1-min</sub> values provided on the database website (under the field `insitu_spl_1min_LR_eavg` in the file `metadata.tab` available <a href="https://researchdata.ntu.edu.sg/file.xhtml?fileId=112432&version=3.1">here</a>), then measuring the L<sub>Aeq,30-s</sub> of each half of the calibated file (corresponding to the file name in <a href="#soundscape_field">`soundscape`</a>).
 - `gain_s` : positive integers
   - Gain to apply to achieve an L<sub>A,eq</sub> of `insitu_leq` decibels when played back over a pair of Beyerdynamic Custom One Pro headphones, powered by a Creative SoundBlaster E5 soundcard (set at volume 40).
 - `Savg_s` : floating point numbers
@@ -398,7 +430,7 @@ This CSV file contains information related to the urban soundscapes used to gene
 
 ## `participants.csv` and `participants_rejected.csv` <a name="participants">
 
-These CSV files contain all the information provided by the participants of the study in the listener context questionnaire. The file `participants.csv` contains the information provided by the participants in the 5-fold cross-validation set and independent test set, whereas the file `participants_rejected.csv` contains the information provided by participants whose responses were rejected from the dataset altogether (the reasons why they were rejected can be found in <a href="#participants_rejected_reasons">`participants_rejected_reasons.csv`</a>).
+These CSV files contain all the information provided by the participants of the study in the listener context questionnaire. The file `participants.csv` contains the information provided by the participants whose responses were accepted into the dataset, whereas the file `participants_rejected.csv` contains the information provided by participants whose responses were rejected from the dataset altogether (the reasons why they were rejected can be found in <a href="#participants_rejected_reasons">`participants_rejected_reasons.csv`</a>).
 
 When participants' responses were rejected, a different participant was assigned the same ID as the participant whose responses were rejected and presented with the same set of stimuli as the participant whose responses were rejected. Hence, we recommend using only the data in `participants.csv` for analysis and training of models; the data in `participants_rejected.csv` is provided only for the purposes of accountability and transparency.
 
@@ -407,15 +439,17 @@ When participants' responses were rejected, a different participant was assigned
 - `participant` : unique strings <a name="participant_field">
   - The ID of the participant who provided the current row of information about themselves. Each ID corresponds to a unique participant.
   - For `participants.csv`, these strings are of the form `ARAUS_#####`, where `#####` is a unique sequence of 5 digits.
-- `fold_p` : integers in {0, 1, 2, 3, 4, 5}
+- `fold_p` : integers in {0, 1, 2, 3, 4, 5, 6, 7}
   - The fold index of the participant. The sets of participants in each fold are pairwise disjoint.
   - Keys:
-    - `0` : Test set.
+    - `0` : ARAUSv1 test set.
     - `1` : Fold 1 of the 5-fold cross-validation set.
     - `2` : Fold 2 of the 5-fold cross-validation set.
     - `3` : Fold 3 of the 5-fold cross-validation set.
     - `4` : Fold 4 of the 5-fold cross-validation set.
     - `5` : Fold 5 of the 5-fold cross-validation set.
+	- `6` : Fold 1 of the ARAUSv2 test set.
+	- `7` : Fold 2 of the ARAUSv2 test set.
 - `language_a` : integers in {0, 1}
   - Response to the question "Do you speak fluently in any languages/dialects other than English?"
   - Keys:
@@ -555,7 +589,7 @@ These CSV files contain the responses to the unique stimuli (= augmented soundsc
 
 Each stimulus was 30 seconds in length, and made by adding a 30-second recording of an urban soundscape (from the <a href="https://urban-soundscapes.org/">Urban Soundscapes of the World database </a> to a 30-second masker track at various soundscape-to-masker ratios (SMR).
 
-The file `responses.csv` contains the responses provided by the participants in the 5-fold cross-validation set and independent test set, whereas the file `responses_rejected.csv` contains the responses rejected from the dataset altogether (the reasons why they were rejected can be found in <a href="#participants_rejected_reasons">`participants_rejected_reasons.csv`</a>).
+The file `responses.csv` contains the responses provided by the participants whose responses were accepted into the dataset, whereas the file `responses_rejected.csv` contains the responses rejected from the dataset altogether (the reasons why they were rejected can be found in <a href="#participants_rejected_reasons">`participants_rejected_reasons.csv`</a>).
 
 When responses were rejected, a different participant was assigned the same ID as the participant whose responses were rejected and presented with the same set of stimuli as the participant whose responses were rejected. Hence, we recommend using only the data in `responses.csv` for analysis and training of models; the data in `responses_rejected.csv` is provided only for the purposes of accountability and transparency.
 
@@ -564,17 +598,19 @@ When responses were rejected, a different participant was assigned the same ID a
 - <a href="#participant_field">`participant`</a> : unique strings
   - The ID of the participant who provided the current row of responses. Each ID corresponds to a unique participant.
   - For `responses.csv`, these strings are of the form `ARAUS_#####`, where `#####` is a unique sequence of 5 digits for each unique participant.
-- `fold_r` : integers in {-1, 0, 1, 2, 3, 4, 5}
+- `fold_r` : integers in {-1, 0, 1, 2, 3, 4, 5, 6, 7}
   - The fold index of the response. The sets of responses in each fold are pairwise disjoint.
   - This is identical to the fold indices associated with `soundscape` (i.e. `fold_s`). When not -1, this is also identical to the fold indices associated with `participant` and `masker` (i.e. `fold_p` and `fold_m`).
   - Keys:
     - `-1` : Present as common stimulus in test set and all folds of 5-fold cross-validation set. Used as practice (first), attention (middle), and consistency check (last) stimulus for all participants.
-    - `0` : Test set.
+    - `0` : ARAUSv1 test set.
     - `1` : Fold 1 of the 5-fold cross-validation set.
     - `2` : Fold 2 of the 5-fold cross-validation set.
     - `3` : Fold 3 of the 5-fold cross-validation set.
     - `4` : Fold 4 of the 5-fold cross-validation set.
     - `5` : Fold 5 of the 5-fold cross-validation set.
+	- `6` : Fold 1 of the ARAUSv2 test set.
+	- `7` : Fold 2 of the ARAUSv2 test set.
 - <a href="#soundscape_field">`soundscape`</a> : unique strings
   - The name of the file containing the urban soundscape that the masker in `masker` was added to.
 - <a href="#masker_field">`masker`</a> : unique strings
@@ -585,7 +621,7 @@ When responses were rejected, a different participant was assigned the same ID a
 - `stimulus_index` <a name="stimulus_index"> : integers in {1, 2, 3, ..., 50, 51}
   - The index of the stimulus for the current participant.
   - Participants were presented with stimuli in ascending order of `stimulus_index`.
-  - Each participant in the 5-fold cross-validation set (`fold_r` in {1, 2, 3, 4, 5}) experienced 45 stimuli, and each participant in the test set (`fold_r` equal to 0) experienced 51 stimuli.
+  - Each participant in the 5-fold cross-validation set and ARAUSv2 test set (`fold_r` in {1, 2, 3, 4, 5, 6, 7}) experienced 45 stimuli, and each participant in the test set (`fold_r` equal to 0) experienced 51 stimuli.
   - The first stimulus presented to every participant, regardless of fold, was identical (the first 30 seconds of recording R0091 from the <a href="https://urban-soundscapes.s3.eu-central-1.wasabisys.com/soundscapes/index.html">Urban Soundscapes of the World database</a>). It served as a practice stimulus for participants to familiarise themselves with the questionnaire interface.
   - The last stimulus presented to every participant, regardless of fold, was identical to the first stimulus. Responses to the first and last stimulus for a given participant may serve as a consistency check for individual participants' responses over the duration of the study.
   - For every participant, one of the stimuli with `stimulus_index` in {15, 16, 17, ..., 24, 25} was designated as an attention stimulus, which was identical to the first and last stimulus presented. HOWEVER, instructions to choose the third option for all questions were overlaid on the video for the attention stimulus. Participants were not allowed to submit their answers until they had selected the third option for all questions related to the attention stimulus.
@@ -722,6 +758,7 @@ conda install -c conda-forge python-wget
 
 # Version history
 
+- 2.0.0 : Updated `download.py`, `manifest.csv`, and `make_augmented_soundscapes.py` for compatibility with ARAUSv2 dataset release.
 - 1.1.0 : Updated `replication_code.ipynb` and `araus_utils.py` to reflect additional plots and results mentioned in the reply letter to our submission to _IEEE Transactions on Affective Computing_, and added a new notebook `extra_code.ipynb` containing extra code and discussions that were outside of the scope of the manuscript.
 - 1.0.0 : Updated `replication_code.ipynb`, `araus_tf.py`, and `araus_utils.py` to be compatible with changes to the ARAUS dataset format (Version 2.0 according to https://doi.org/10.21979/N9/9OTEVX). The `participant` field in `./data/responses.csv`, `./data/responses_rejected.csv`, `./data/participants.csv`, `./data/participants_rejected.csv`, and `./data/participants_rejected_reasons.csv` has been updated to `ARAUS_#####`, where `#####` is the string in the `participant` field of the previous version (Version 1.2 according to https://doi.org/10.21979/N9/9OTEVX). In addition, two new fields `Leq_L_r` and `Leq_R_r` have been added to `./data/responses.csv` and `./data/responses_rejected.csv` corresponding to the exponentially averaged sound pressure level (in decibels) over time (with no weighting filter applied), computed with fast averaging (i.e. with time constant of 125 milliseconds) and measured according to the method described in http://dx.doi.org/10.1016/j.mex.2021.101288.
 - 0.0.2 : Added details of FFT for `M#####_#` documentation.
