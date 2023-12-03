@@ -1,4 +1,4 @@
-import argparse, os
+import argparse, os, shutil
 import pandas as pd
 from araus_utils import download_file, unzip, split_usotw_track
 
@@ -28,18 +28,33 @@ args = parser.parse_args()
 manifest = pd.read_csv(args.manifest_fpath)
 for _, row in manifest.iterrows():
     # DOWNLOAD FILE IN MANIFEST
-    url = row['url']
-    out = row['out']
-    checksum = row['checksum']
-    download_file(url, out, checksum = checksum, max_tries = args.max_tries, overwrite = args.overwrite, verbose = args.verbose)
+    download_file(row.url, row.out, checksum = row.checksum, max_tries = args.max_tries, overwrite = args.overwrite, verbose = args.verbose)
     
     # UNZIP FILE IF IT IS A ZIP FILE
-    if out.split('.')[-1] == 'zip':
-        unzip(out, out_dir = args.zip_out_dir, delete_zip = args.delete_zip, verbose = args.verbose)
+    if row.out.split('.')[-1] == 'zip':
+        unzip(row.out, out_dir = args.zip_out_dir, delete_zip = args.delete_zip, verbose = args.verbose)
     
     # SPLIT TRACK IF IT IS A WAV FILE
-    # (We assume all wav files in the manifest are from the USotW database)
-    if out.split('.')[-1] == 'wav':
-        split_usotw_track(in_fpath = out, out_dir = args.soundscape_out_dir, overwrite = max(0,args.overwrite-1), verbose = args.verbose)
-        
-        
+    # (We assume all wav files in the manifest are 1-min long @ 48 kHz)
+    if row.out.split('.')[-1] == 'wav':
+        split_usotw_track(in_fpath = row.out, out_dir = args.soundscape_out_dir, overwrite = max(0,args.overwrite-1), verbose = args.verbose)
+
+#------------------------------ Re-organise and process files for V2 ------------------------------#
+
+maskersv2_src = glob.glob(os.path.join('..','maskersv2','*.wav'))
+dst_dir = os.path.join('..','maskers')
+for src in maskersv2_src:
+    _, fname = os.path.split(src)
+    dst = os.path.join(dst_dir,fname)
+    # print(src, dst)
+    shutil.move(src,dst)
+shutil.rmtree(os.path.join('..','maskersv2'))
+
+binaural_src = glob.glob(os.path.join('..','binaural','*.wav'))
+dst_dir = os.path.join('..','soundscapes_raw')
+for src in binaural_src:
+    _, fname = os.path.split(src)
+    dst = os.path.join(dst_dir,fname)
+    split_usotw_track(src)
+    shutil.move(src,dst)
+shutil.rmtree(os.path.join('..','binaural'))

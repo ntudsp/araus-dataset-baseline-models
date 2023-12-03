@@ -26,8 +26,8 @@ parser.add_argument('-s','--stop-upon-failure',dest='stop_upon_failure',metavar=
                    help = 'If 1, any error in making the augmented soundscapes will stop processing. If 0, then processing will continue regardless of errors in making the augmented soundscapes, until attempts to make all augmented soundscapes have been made. Default: 0.')
 parser.add_argument('-v','--verbose',dest='verbose', metavar='V', type = int, nargs='?', default = 1, choices = [0,1,2],
                     help='Verbosity of output. If 0, prints nothing. If 1, prints basic status messages. If 2, prints detailed status messages. Default: 1.')
-parser.add_argument('-f','--folds', dest='folds',metavar = 'F', type = int, nargs = '*', default = [0,1,2,3,4,5], choices = [-1,0,1,2,3,4,5],
-                   help='Folds to output augmented soundscapes for. Enter multiple values to output multiple folds. Possible values: 0 = test set, 1/2/3/4/5 = cross-validation set folds, -1 = attention/calibration/practice stimuli. Default: [0,1,2,3,4,5].')
+parser.add_argument('-f','--folds', dest='folds',metavar = 'F', type = int, nargs = '*', default = [0,1,2,3,4,5], choices = [-1,0,1,2,3,4,5,6,7],
+                   help='Folds to output augmented soundscapes for. Enter multiple values to output multiple folds. Possible values: 0 = ARAUSv1 test set, 1/2/3/4/5 = ARAUSv1 cross-validation set folds, 6/7 = ARAUSv2 test set, -1 = attention/calibration/practice stimuli. Default: [0,1,2,3,4,5].')
 
 args = parser.parse_args()
 
@@ -39,7 +39,7 @@ soundscapes = pd.read_csv(args.soundscapes_csv_fpath)
 maskers = pd.read_csv(args.maskers_csv_fpath)
 
 if args.verbose > 0: print('Making augmented soundscapes for the following folds:', folds)
-responses_f = responses[responses['fold_r'].isin(folds)]
+responses_f = responses[responses.fold_r.isin(folds)]
 make_augmented_soundscapes(responses_f, soundscapes, maskers,
                            mode              = 'file'                ,
                            soundscape_dir    = args.soundscape_dir   ,
